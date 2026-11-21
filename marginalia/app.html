@@ -1,0 +1,1621 @@
+<title>Marginalia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: an annotated page — sources in the left margin, the conversation as the page, the studio in the right margin. Highlighter yellow marks every cited passage. */
+:root{
+  --bg:#eceff5; --panel:#ffffff; --panel-2:#f5f7fb; --ink:#141a2b; --muted:#5b647a; --line:#dbe0ea; --line-2:#c3cad8;
+  --accent:#2342d4; --accent-ink:#ffffff; --accent-soft:#e6eafd; --mark:#ffe27a; --mark-ink:#3f2f00;
+  --ok:#15805a; --ok-soft:#dff3ea; --bad:#bf3434; --bad-soft:#fbe5e5; --host-a:#2342d4; --host-b:#a2470f;
+  --shadow:0 1px 2px rgba(20,26,43,.06),0 10px 30px rgba(20,26,43,.08);
+  --f-display:"Bricolage Grotesque","Noto Sans JP",system-ui,sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:12px; --r-s:8px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c0f17; --panel:#151a25; --panel-2:#1b2130; --ink:#e7ebf4; --muted:#98a1b6; --line:#262e40; --line-2:#36405a;
+  --accent:#8b9dff; --accent-ink:#0c0f17; --accent-soft:#1e2647; --mark:#5c4d10; --mark-ink:#ffeaa3;
+  --ok:#4fd19a; --ok-soft:#123426; --bad:#ff8080; --bad-soft:#3a1717; --host-a:#8b9dff; --host-b:#f0a06a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c0f17; --panel:#151a25; --panel-2:#1b2130; --ink:#e7ebf4; --muted:#98a1b6; --line:#262e40; --line-2:#36405a;
+  --accent:#8b9dff; --accent-ink:#0c0f17; --accent-soft:#1e2647; --mark:#5c4d10; --mark-ink:#ffeaa3;
+  --ok:#4fd19a; --ok-soft:#123426; --bad:#ff8080; --bad-soft:#3a1717; --host-a:#8b9dff; --host-b:#f0a06a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35); color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.65;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 12px;gap:12px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding-block:10px 0;min-width:0;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:21px;letter-spacing:-.02em;white-space:nowrap}
+.brand b{font-weight:700;background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%)}
+.nb-switch{display:flex;align-items:center;gap:6px;min-width:0;flex:1}
+.nb-title{flex:1;min-width:120px;max-width:520px;border:1px solid transparent;background:transparent;border-radius:var(--r-s);padding:6px 10px;font-family:var(--f-display);font-size:17px;font-weight:500}
+.nb-title:hover{border-color:var(--line)}
+.nb-title:focus{border-color:var(--accent);background:var(--panel);outline:none}
+select.nb-select{max-width:200px}
+.top-actions{display:flex;gap:6px;align-items:center}
+.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.status-dot i{width:8px;height:8px;border-radius:50%;background:var(--line-2);display:inline-block}
+.status-dot.on i{background:var(--ok)}
+.status-dot.off i{background:var(--bad)}
+
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--line-2);background:var(--panel-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--panel-2)}
+.btn.sm{padding:3px 10px;font-size:12px}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);display:inline-grid;place-items:center;padding:0}
+.icon-btn:hover{background:var(--panel-2)}
+.icon-btn svg{width:17px;height:17px}
+select,input[type=text],input[type=password],textarea{border:1px solid var(--line);background:var(--panel);border-radius:var(--r-s);padding:6px 10px}
+select:focus,input:focus,textarea:focus{border-color:var(--accent);outline:none}
+.tag{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--panel-2);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.tag.ai{background:var(--mark);color:var(--mark-ink);border-color:transparent}
+
+/* panes */
+.panes{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr) minmax(300px,370px);gap:12px;min-height:0}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.pane-h{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.pane-h h2{font-family:var(--f-display);font-size:15px;font-weight:700;margin:0;letter-spacing:-.01em;flex:1;white-space:nowrap}
+.pane-b{flex:1;overflow:auto;min-height:0}
+.pane-f{border-top:1px solid var(--line);padding:10px 14px;font-size:12px;color:var(--muted)}
+
+/* sources */
+.selall{display:flex;align-items:center;gap:8px;padding:10px 14px 4px;font-size:12px;color:var(--muted)}
+.src-list{list-style:none;margin:0;padding:4px 8px 12px;display:flex;flex-direction:column;gap:2px}
+.src{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px;border-radius:var(--r-s)}
+.src:hover{background:var(--panel-2)}
+.src input{width:16px;height:16px;accent-color:var(--accent)}
+.src-open{border:0;background:none;text-align:left;padding:0;min-width:0;display:flex;flex-direction:column;gap:1px}
+.src-title{font-weight:500;font-size:13px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.src-meta{font-size:11px;color:var(--muted);display:flex;gap:6px;align-items:center;font-family:var(--f-mono)}
+.src-del{opacity:0;border:0;background:none;color:var(--muted);padding:4px;border-radius:6px}
+.src:hover .src-del,.src-del:focus{opacity:1}
+.src.loading .src-title{color:var(--muted)}
+.meter{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--accent)}
+.empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:13px}
+.empty strong{display:block;color:var(--ink);font-family:var(--f-display);font-size:16px;margin-bottom:4px}
+
+/* chat */
+.modes{display:flex;gap:4px;flex-wrap:wrap}
+.mode{border:1px solid var(--line);background:transparent;border-radius:999px;padding:3px 10px;font-size:12px;color:var(--muted)}
+.mode[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.chat-scroll{flex:1;overflow:auto;padding:18px clamp(14px,4vw,40px) 8px;display:flex;flex-direction:column;gap:18px;min-height:0}
+.overview{border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;background:var(--panel-2)}
+.overview h3{font-family:var(--f-display);font-size:22px;letter-spacing:-.02em;margin:0 0 6px;text-wrap:balance;line-height:1.3}
+.overview p{margin:0 0 10px;max-width:68ch}
+.ov-meta{font-size:12px;color:var(--muted);font-family:var(--f-mono);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:12.5px;text-align:left;line-height:1.45}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.msg{display:flex;flex-direction:column;gap:6px;max-width:760px;min-width:0}
+.msg.user{align-self:flex-end;max-width:min(560px,92%)}
+.msg.user .bubble{background:var(--accent-soft);border-radius:16px 16px 4px 16px;padding:9px 14px;white-space:pre-wrap;word-break:break-word}
+.msg.ai .bubble{min-width:0}
+.msg .acts{display:flex;gap:2px;flex-wrap:wrap}
+.thinking{color:var(--muted);display:inline-flex;align-items:center;gap:8px;font-size:13px}
+.thinking::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent);animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.thinking::before{animation:none}}
+.err{color:var(--bad);font-size:13px}
+.composer{border-top:1px solid var(--line);padding:10px clamp(10px,3vw,24px) 12px;display:flex;flex-direction:column;gap:6px}
+.comp-row{display:flex;gap:8px;align-items:flex-end;border:1px solid var(--line-2);border-radius:18px;padding:6px 6px 6px 14px;background:var(--panel)}
+.comp-row:focus-within{border-color:var(--accent)}
+.comp-row textarea{flex:1;border:0;padding:6px 0;resize:none;max-height:180px;min-height:24px;background:transparent;line-height:1.55}
+.comp-row textarea:focus{outline:none}
+.comp-meta{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted);padding:0 6px;flex-wrap:wrap}
+.send{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.mic.live{background:var(--bad);border-color:var(--bad);color:#fff}
+.partial{font-size:12px;color:var(--muted);padding:0 8px}
+
+/* prose */
+.prose{line-height:1.75;overflow-wrap:anywhere}
+.prose>*:first-child{margin-top:0}
+.prose h1,.prose h2,.prose h3{font-family:var(--f-display);letter-spacing:-.015em;line-height:1.35;text-wrap:balance;margin:1.2em 0 .4em}
+.prose h1{font-size:22px}.prose h2{font-size:18px}.prose h3{font-size:15.5px}
+.prose p,.prose ul,.prose ol{margin:.5em 0;max-width:72ch}
+.prose ul,.prose ol{padding-left:1.4em}
+.prose li{margin:.2em 0}
+.prose blockquote{margin:.7em 0;padding:.3em 1em;border-left:3px solid var(--mark);background:var(--panel-2);border-radius:0 6px 6px 0}
+.prose code{font-family:var(--f-mono);font-size:.88em;background:var(--panel-2);padding:1px 5px;border-radius:4px}
+.prose pre{overflow:auto;background:var(--panel-2);padding:10px;border-radius:8px}
+.prose table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}
+.prose th,.prose td{border:1px solid var(--line);padding:5px 9px;text-align:left;vertical-align:top}
+.prose hr{border:0;border-top:1px solid var(--line);margin:1.2em 0}
+.cite{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:17px;padding:0 5px;margin:0 1px;border-radius:5px;border:0;background:var(--mark);color:var(--mark-ink);font-family:var(--f-mono);font-size:10px;font-weight:600;vertical-align:2px;line-height:1}
+.cite:hover{outline:1.5px solid var(--mark-ink)}
+.gk{font-size:11px;color:var(--muted);border:1px dashed var(--line-2);border-radius:4px;padding:0 4px;margin-left:2px;white-space:nowrap}
+
+/* studio */
+.audio-card{margin:12px;border-radius:var(--r);padding:14px;background:var(--ink);color:var(--panel);display:flex;flex-direction:column;gap:10px}
+.audio-card h3{margin:0;font-family:var(--f-display);font-size:17px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.audio-card p{margin:0;font-size:12.5px;opacity:.8;line-height:1.55}
+.audio-card .row{display:flex;gap:6px;flex-wrap:wrap}
+.audio-card select{background:transparent;color:inherit;border-color:color-mix(in srgb,var(--panel) 30%,transparent);font-size:12.5px;padding:4px 8px}
+.audio-card select option{color:var(--ink);background:var(--panel)}
+.audio-card .btn.primary{background:var(--mark);border-color:var(--mark);color:var(--mark-ink)}
+.wave{display:flex;gap:2px;align-items:center;height:18px}
+.wave i{width:3px;border-radius:2px;background:var(--mark);opacity:.9}
+.focus-row{padding:0 12px 10px;display:flex;flex-direction:column;gap:4px}
+.focus-row label{font-size:11.5px;color:var(--muted)}
+.focus-row input{width:100%}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 12px 12px}
+.tool{border:1px solid var(--line);background:var(--panel);border-radius:var(--r-s);padding:9px 10px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tool:hover{border-color:var(--accent);background:var(--accent-soft)}
+.tool b{font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
+.tool span{font-size:11px;color:var(--muted);line-height:1.4}
+.tool.hero{grid-column:span 2;flex-direction:row;align-items:center;gap:10px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 6px;border-top:1px solid var(--line)}
+.sec-h h3{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.notes{list-style:none;margin:0;padding:0 8px 14px;display:flex;flex-direction:column;gap:2px}
+.note-item{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 6px;border-radius:var(--r-s);border:0;background:none;text-align:left;width:100%}
+.note-item:hover{background:var(--panel-2)}
+.note-item .tag{text-align:center}
+.note-item .t{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.note-item .d{font-size:11px;color:var(--muted);font-family:var(--f-mono)}
+.note-item.running .t{color:var(--muted)}
+
+/* dialogs */
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--ink);padding:0;box-shadow:var(--shadow);width:min(720px,calc(100vw - 24px));max-height:calc(100vh - 24px)}
+dialog::backdrop{background:rgba(10,14,24,.45)}
+dialog.wide{width:min(1100px,calc(100vw - 24px));height:calc(100vh - 32px)}
+.d-wrap{display:flex;flex-direction:column;max-height:calc(100vh - 26px);height:100%}
+.d-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.d-head h2{margin:0;font-family:var(--f-display);font-size:18px;flex:1;min-width:0;letter-spacing:-.01em}
+.d-head input.v-title{flex:1;min-width:140px;font-family:var(--f-display);font-size:18px;border-color:transparent;background:transparent}
+.d-head input.v-title:hover{border-color:var(--line)}
+.d-body{padding:16px 18px 20px;overflow:auto;flex:1;min-height:0}
+.d-acts{display:flex;gap:4px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 16px}
+.tabs button{border:0;background:none;padding:10px 12px;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.drop{border:1.5px dashed var(--line-2);border-radius:var(--r);padding:28px 16px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:8px;align-items:center}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{color:var(--ink);font-size:15px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label{font-size:12px;color:var(--muted);font-weight:500}
+.field textarea{min-height:220px;resize:vertical}
+.hint{font-size:12px;color:var(--muted)}
+.chunk{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:8px 6px;border-radius:6px;scroll-margin:80px}
+.chunk .cid{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding-top:3px}
+.chunk .ct{white-space:pre-wrap;overflow-wrap:anywhere;max-width:76ch}
+.chunk.hit{background:var(--mark);color:var(--mark-ink)}
+.chunk.hit .cid{color:var(--mark-ink)}
+.guide{background:var(--panel-2);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.guide p{margin:0 0 8px}
+.set-grid{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px 16px;align-items:center}
+.set-grid label{font-size:13px;font-weight:500}
+@media (max-width:520px){.set-grid{grid-template-columns:1fr}}
+
+/* outputs */
+.mm-wrap{overflow:auto;padding:8px 4px 16px}
+.mm-node{display:flex;align-items:center;position:relative}
+.mm-kids{display:flex;flex-direction:column;position:relative;padding-left:30px}
+.mm-kids::before{content:"";position:absolute;left:0;top:50%;width:15px;border-top:1.5px solid var(--line-2)}
+.mm-kids>.mm-node{padding:4px 0}
+.mm-kids>.mm-node::before{content:"";position:absolute;left:-15px;top:50%;width:15px;border-top:1.5px solid var(--line-2)}
+.mm-kids>.mm-node::after{content:"";position:absolute;left:-15px;top:0;bottom:0;border-left:1.5px solid var(--line-2)}
+.mm-kids>.mm-node:first-child::after{top:50%}
+.mm-kids>.mm-node:last-child::after{bottom:50%}
+.mm-kids>.mm-node:only-child::after{display:none}
+.mm-pill{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line-2);background:var(--panel);border-radius:999px;padding:5px 6px 5px 13px;font-size:13px;max-width:240px;line-height:1.35;text-align:left;white-space:normal}
+.mm-pill.leaf{padding-right:13px}
+.mm-pill.root{background:var(--ink);color:var(--panel);border-color:var(--ink);font-family:var(--f-display);font-size:15px;font-weight:700;padding:8px 16px}
+.mm-pill.d1{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.mm-pill.sel{outline:2px solid var(--mark);outline-offset:1px}
+.mm-tog{width:20px;height:20px;border-radius:50%;border:0;background:var(--panel-2);font-family:var(--f-mono);font-size:12px;line-height:1;display:grid;place-items:center;flex:none;color:var(--muted)}
+.mm-detail{margin-top:8px;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--panel-2)}
+.mm-detail h4{margin:0 0 4px;font-size:15px}
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl li{display:grid;grid-template-columns:130px minmax(0,1fr);gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tl .dt{font-family:var(--f-mono);font-size:12px;color:var(--accent);font-weight:600;padding-top:2px}
+.tl h4{margin:0 0 2px;font-size:14.5px}
+.tl p{margin:0;color:var(--muted);font-size:13px}
+@media (max-width:560px){.tl li{grid-template-columns:1fr;gap:2px}}
+.cast{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:8px}
+.cast div{border:1px solid var(--line);border-radius:var(--r-s);padding:8px 10px;font-size:13px}
+.fc-stage{display:flex;flex-direction:column;align-items:center;gap:14px}
+.fc{width:min(560px,100%);aspect-ratio:16/10;perspective:1200px;cursor:pointer}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.fc-in{transition:none}}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1px solid var(--line-2);background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-size:18px;line-height:1.5;box-shadow:var(--shadow);overflow:auto}
+.fc-face.back{transform:rotateY(180deg);background:var(--panel-2);font-size:15.5px}
+.fc-face small{position:absolute;top:12px;left:16px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.fc-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.prog{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.qz{display:flex;flex-direction:column;gap:18px;max-width:760px}
+.qz-q{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.qz-q h4{margin:0 0 10px;font-size:15px;line-height:1.5}
+.qz-c{display:flex;flex-direction:column;gap:6px}
+.qz-c button{border:1px solid var(--line);background:var(--panel);border-radius:var(--r-s);padding:8px 12px;text-align:left;display:flex;gap:10px}
+.qz-c button:hover:not(:disabled){border-color:var(--accent)}
+.qz-c button .k{font-family:var(--f-mono);color:var(--muted);font-weight:600}
+.qz-c button.right{border-color:var(--ok);background:var(--ok-soft)}
+.qz-c button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-c button:disabled{cursor:default}
+.qz-x{margin-top:10px;font-size:13px;background:var(--panel-2);border-radius:var(--r-s);padding:8px 12px}
+.score{font-family:var(--f-display);font-size:26px;font-weight:700}
+.sl-stage{display:flex;flex-direction:column;gap:12px}
+.slide{aspect-ratio:16/9;width:100%;max-width:100%;border-radius:14px;background:var(--panel);border:1px solid var(--line-2);padding:clamp(16px,4%,44px);display:flex;flex-direction:column;gap:clamp(8px,2%,18px);overflow:auto;box-shadow:var(--shadow)}
+.slide h3{font-family:var(--f-display);font-size:clamp(18px,3vw,34px);margin:0;letter-spacing:-.02em;line-height:1.2;text-wrap:balance}
+.slide ul{margin:0;padding-left:1.2em;font-size:clamp(13px,1.6vw,19px);display:flex;flex-direction:column;gap:.4em}
+.slide .sn{margin-top:auto;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.slide.cover{background:var(--ink);color:var(--panel);justify-content:flex-end}
+.slide.cover h3{font-size:clamp(24px,4.4vw,48px)}
+.sl-notes{font-size:13px;color:var(--muted);background:var(--panel-2);border-radius:var(--r-s);padding:10px 12px}
+.sl-nav{display:flex;align-items:center;gap:8px;justify-content:center}
+.xx h3{font-family:var(--f-display);font-size:16px;margin:18px 0 8px}
+.xx .verdict{font-size:15px;background:var(--panel-2);border-radius:var(--r);padding:12px 14px;max-width:76ch}
+.xx .card{border:1px solid var(--line);border-radius:var(--r-s);padding:10px 12px;margin-bottom:8px}
+.xx .pos{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;margin:4px 0}
+.xx .pos b{font-family:var(--f-mono);color:var(--muted);font-size:12px;padding-top:2px}
+.xx .assess{margin-top:6px;font-size:13px;border-top:1px dashed var(--line);padding-top:6px}
+.rate{font-family:var(--f-mono);font-size:11px;font-weight:600;padding:1px 6px;border-radius:4px}
+.rate.h{background:var(--ok-soft);color:var(--ok)}.rate.m{background:var(--mark);color:var(--mark-ink)}.rate.l{background:var(--bad-soft);color:var(--bad)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-s)}
+.tbl{border-collapse:collapse;font-size:13px;min-width:100%}
+.tbl th{background:var(--panel-2);text-align:left;font-weight:600;position:sticky;top:0}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top}
+.memo-edit{width:100%;min-height:50vh;resize:vertical;font-family:var(--f-body);line-height:1.7}
+
+/* audio player */
+.player{display:flex;flex-direction:column;gap:12px}
+.p-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:-16px;background:var(--panel);padding:8px 0;z-index:2;border-bottom:1px solid var(--line)}
+.p-bar .now{flex:1;font-size:12px;color:var(--muted);min-width:120px}
+.play{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--panel);border:0;display:grid;place-items:center}
+.play svg{width:18px;height:18px}
+.lines{display:flex;flex-direction:column;gap:2px;max-width:780px}
+.line{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:6px 8px;border-radius:8px;border:0;background:none;text-align:left;line-height:1.7}
+.line:hover{background:var(--panel-2)}
+.line .who{font-weight:700;font-size:12px;padding-top:3px}
+.line .who.A{color:var(--host-a)}.line .who.B{color:var(--host-b)}.line .who.Q{color:var(--muted)}
+.line.cur{background:var(--mark);color:var(--mark-ink)}
+.line.cur .who{color:var(--mark-ink)}
+.line.ins{border-left:3px solid var(--accent);border-radius:0 8px 8px 0}
+.ask-row{display:flex;gap:6px;border:1px solid var(--line-2);border-radius:999px;padding:4px 4px 4px 14px;max-width:780px}
+.ask-row input{flex:1;border:0;background:transparent;padding:4px 0;min-width:0}
+.ask-row input:focus{outline:none}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:9px 16px;border-radius:999px;font-size:13px;z-index:100;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
+.mtabs{display:none}
+.spin{width:12px;height:12px;border:2px solid var(--line-2);border-top-color:var(--accent);border-radius:50%;display:inline-block;animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.confirm{background:var(--bad);color:#fff;border-color:var(--bad)}
+
+@media (max-width:1100px){.panes{grid-template-columns:minmax(220px,260px) minmax(0,1fr) minmax(280px,320px)}}
+@media (max-width:900px){
+  .app{padding-block:0 0;gap:8px}
+  .panes{grid-template-columns:minmax(0,1fr)}
+  .pane{display:none}
+  .pane.on{display:flex}
+  .mtabs{display:flex;gap:4px;padding:6px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+  .mtabs button{flex:1;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:8px;font-size:13px;font-weight:500}
+  .mtabs button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .app{grid-template-rows:auto 1fr auto}
+  .status-dot span{display:none}
+  .top{padding-block:8px 0;row-gap:6px}
+  .top-actions{margin-left:auto}
+  .nb-switch{order:3;flex:1 1 100%}
+  .nb-title{font-size:15px;min-width:0}
+  select.nb-select{max-width:42%}
+  .btn .lbl{display:none}
+  #paneChat .pane-h{flex-wrap:wrap;row-gap:8px}
+  #paneChat .modes{order:3;flex:1 1 100%}
+}
+</style>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand" aria-label="Marginalia">Margin<b>alia</b></div>
+    <div class="nb-switch">
+      <select class="nb-select" id="nbSelect" aria-label="ノートブックを切り替え"></select>
+      <input class="nb-title" id="nbTitle" type="text" aria-label="ノートブック名" placeholder="ノートブック名">
+    </div>
+    <div class="top-actions">
+      <span class="status-dot" id="aiStatus" title="Claudeとの接続"><i></i><span>接続を確認中…</span></span>
+      <button class="btn" id="newNb" type="button" aria-label="新しいノートブック">＋<span class="lbl"> 新しいノートブック</span></button>
+      <button class="icon-btn" id="openSettings" type="button" aria-label="設定"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
+  </header>
+
+  <main class="panes">
+    <section class="pane" id="paneSources" aria-label="ソース">
+      <div class="pane-h"><h2>ソース</h2><button class="btn sm primary" id="addSrc" type="button">＋ 追加</button></div>
+      <div class="pane-b" id="srcBody"></div>
+      <div class="pane-f" id="srcFoot"></div>
+    </section>
+
+    <section class="pane on" id="paneChat" aria-label="チャット">
+      <div class="pane-h">
+        <h2>チャット</h2>
+        <div class="modes" id="modes" role="group" aria-label="回答モード"></div>
+        <button class="btn ghost sm" id="clearChat" type="button">履歴を消去</button>
+      </div>
+      <div class="chat-scroll" id="chatScroll"></div>
+      <form class="composer" id="composer">
+        <div class="partial" id="partial" hidden></div>
+        <div class="comp-row">
+          <textarea id="q" rows="1" placeholder="ソースについて質問する…" aria-label="質問"></textarea>
+          <button class="icon-btn mic" id="mic" type="button" aria-label="音声入力" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+          <button class="icon-btn send" id="send" type="submit" aria-label="送信"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="comp-meta"><span id="ctxInfo"></span><span>Enterで送信 · Shift+Enterで改行</span></div>
+      </form>
+    </section>
+
+    <section class="pane" id="paneStudio" aria-label="スタジオ">
+      <div class="pane-h"><h2>スタジオ</h2></div>
+      <div class="pane-b" id="studioBody">
+        <div class="audio-card">
+          <h3><span class="wave" aria-hidden="true"><i style="height:6px"></i><i style="height:14px"></i><i style="height:9px"></i><i style="height:17px"></i><i style="height:7px"></i></span>音声解説</h3>
+          <p>2人のホストがソースを掘り下げるラジオ番組を作ります。再生中にあなたが割り込んで質問すると、番組内で答えてくれます。</p>
+          <div class="row">
+            <select id="auFormat" aria-label="形式"><option value="deep">ディープダイブ</option><option value="brief">要点だけ</option><option value="critique">批評</option><option value="debate">ディベート</option></select>
+            <select id="auLen" aria-label="長さ"><option value="short">短め（約3分）</option><option value="std" selected>標準（約6分）</option><option value="long">長め（約10分）</option></select>
+          </div>
+          <button class="btn primary" id="genAudio" type="button">音声解説を作成</button>
+        </div>
+        <div class="focus-row">
+          <label for="focus">フォーカス（任意）— どの出力にも反映されます</label>
+          <input id="focus" type="text" placeholder="例: 初心者向けに / 実務への応用 / 第3章だけ">
+        </div>
+        <div class="tools" id="tools"></div>
+        <div class="sec-h"><h3>保存済み</h3><button class="btn sm" id="newMemo" type="button">＋ メモ</button></div>
+        <ul class="notes" id="notes"></ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mtabs" id="mtabs" role="tablist">
+    <button type="button" data-tab="sources" role="tab">ソース</button>
+    <button type="button" data-tab="chat" role="tab" aria-selected="true">チャット</button>
+    <button type="button" data-tab="studio" role="tab">スタジオ</button>
+  </nav>
+</div>
+
+<!-- add source -->
+<dialog id="addDlg" aria-labelledby="addH">
+  <div class="d-wrap">
+    <div class="d-head"><h2 id="addH">ソースを追加</h2><button class="icon-btn" type="button" data-close aria-label="閉じる">✕</button></div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-atab="file" aria-selected="true">ファイル</button>
+      <button type="button" role="tab" data-atab="paste">テキストを貼り付け</button>
+      <button type="button" role="tab" data-atab="topic">トピックから作成</button>
+    </div>
+    <div class="d-body">
+      <div data-apanel="file">
+        <label class="drop" id="drop" for="fileIn">
+          <strong>ファイルをドロップ、またはクリックして選択</strong>
+          <span>PDF・テキスト・Markdown・CSV・JSON・HTML・画像（画像やスキャンPDFはClaudeが読み取ります）</span>
+          <span class="btn sm">ファイルを選ぶ</span>
+        </label>
+        <input id="fileIn" type="file" multiple hidden accept=".pdf,.txt,.md,.markdown,.csv,.tsv,.json,.html,.htm,.xml,.srt,.vtt,.log,.png,.jpg,.jpeg,.webp,.gif,text/*,image/*,application/pdf">
+        <p class="hint">ウェブページは本文をコピーして「テキストを貼り付け」から追加してください。</p>
+      </div>
+      <div data-apanel="paste" hidden>
+        <div class="field"><label for="pTitle">タイトル</label><input id="pTitle" type="text" placeholder="例: 会議メモ 11/20"></div>
+        <div class="field"><label for="pText">本文</label><textarea id="pText" placeholder="ここにテキストを貼り付け"></textarea></div>
+        <button class="btn primary" id="pAdd" type="button">追加する</button>
+      </div>
+      <div data-apanel="topic" hidden>
+        <div class="field"><label for="tTopic">トピック</label><input id="tTopic" type="text" placeholder="例: 量子コンピュータの基礎"></div>
+        <p class="hint">Claudeの一般知識から入門資料を書き、「AI生成」ソースとして追加します。外部の一次資料ではないので、重要な判断には実際の資料を追加してください。</p>
+        <button class="btn primary" id="tAdd" type="button">入門資料を作成</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- source viewer -->
+<dialog id="srcDlg" class="wide" aria-labelledby="srcH">
+  <div class="d-wrap">
+    <div class="d-head"><span class="tag" id="srcKind"></span><h2 id="srcH"></h2><button class="icon-btn" type="button" data-close aria-label="閉じる">✕</button></div>
+    <div class="d-body" id="srcView"></div>
+  </div>
+</dialog>
+
+<!-- output viewer -->
+<dialog id="viewDlg" class="wide" aria-label="出力">
+  <div class="d-wrap">
+    <div class="d-head">
+      <span class="tag" id="vTag"></span>
+      <input class="v-title" id="vTitle" type="text" aria-label="タイトル">
+      <div class="d-acts">
+        <button class="btn sm ghost" id="vCopy" type="button">コピー</button>
+        <button class="btn sm ghost" id="vDown" type="button">書き出し</button>
+        <button class="btn sm ghost" id="vToSrc" type="button">ソースに追加</button>
+        <button class="btn sm ghost danger" id="vDel" type="button">削除</button>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="閉じる">✕</button>
+    </div>
+    <div class="d-body" id="vBody"></div>
+  </div>
+</dialog>
+
+<!-- settings -->
+<dialog id="setDlg" aria-labelledby="setH">
+  <div class="d-wrap">
+    <div class="d-head"><h2 id="setH">設定</h2><button class="icon-btn" type="button" data-close aria-label="閉じる">✕</button></div>
+    <div class="d-body">
+      <div class="set-grid">
+        <label for="sDepth">考える深さ</label>
+        <select id="sDepth"><option value="quick">速い（短い作業向け）</option><option value="default">標準</option><option value="complex">じっくり（最も高性能）</option></select>
+        <label for="sLang">出力の言語</label>
+        <select id="sLang"><option value="ja">日本語</option><option value="en">English</option><option value="auto">ソースに合わせる</option></select>
+        <label>保存先</label><div class="hint" id="sStore"></div>
+        <label>Claude</label><div class="hint" id="sAi"></div>
+        <label for="sKey" id="sKeyL" hidden>APIキー</label>
+        <div id="sKeyBox" hidden><input id="sKey" type="password" placeholder="sk-ant-..." autocomplete="off" style="width:100%"><div class="hint">このブラウザ内にのみ保存され、api.anthropic.com への通信にだけ使われます。</div></div>
+        <label>書き出し</label><div><button class="btn sm" id="sExport" type="button">ノートブックをMarkdownで書き出す</button></div>
+        <label>ノートブック</label><div><button class="btn sm danger" id="sDelNb" type="button">このノートブックを削除</button></div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+"use strict";
+/* ---------- utilities ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const mkId = p => p + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const ENC = new TextEncoder();
+const bytes = s => ENC.encode(s).length;
+const fmtN = n => n.toLocaleString("ja-JP");
+const fmtDate = t => { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
+let toastT;
+function toast(msg) { let t = $(".toast"); if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.append(t); } t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+function looseJSON(t) {
+  if (t == null) return undefined;
+  try { return JSON.parse(t); } catch {}
+  const f = t.match(/```(?:json)?\s*([\s\S]*?)```/); if (f) { try { return JSON.parse(f[1]); } catch {} }
+  const a = t.search(/[\[{]/), b = Math.max(t.lastIndexOf("}"), t.lastIndexOf("]"));
+  if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch {} }
+  return undefined;
+}
+const arr = v => Array.isArray(v) ? v : [];
+const str = v => typeof v === "string" ? v : (v == null ? "" : String(v));
+
+/* ---------- capabilities & AI ---------- */
+const AI = { sample: null, tts: null, dict: null, dl: null, checked: false, images: false };
+const MODELS = { quick: "claude-haiku-5-5", default: "claude-sonnet-5-5", complex: "claude-opus-5-5" };
+async function initCaps() {
+  if (window.claude?.use) {
+    const get = n => window.claude.use(n).catch(() => null);
+    const [sample, tts, dict, dl] = await Promise.all(["sample", "tts", "dictation", "downloads"].map(get));
+    Object.assign(AI, { sample, tts, dict, dl });
+    if (sample) { try { const l = await sample.limits(); AI.images = !!l?.images; AI.imgMax = l?.images?.maxCount || 1; } catch {} }
+  }
+  AI.checked = true;
+  renderStatus();
+  setupDictation();
+}
+function apiKey() { return lsGet("marginalia.key", ""); }
+function aiReady() { return !!AI.sample || !!apiKey(); }
+async function ask(input, o = {}) {
+  const tier = o.tier || S.settings.depth || "default";
+  if (AI.sample) {
+    const opts = { modelTier: tier, cache: false };
+    if (o.onText) opts.onText = o.onText;
+    if (o.signal) opts.signal = o.signal;
+    if (o.images) opts.images = o.images;
+    if (o.json) return AI.sample.json(input, opts);
+    return (await AI.sample(input, opts)).text;
+  }
+  const key = apiKey();
+  if (!key) throw { code: "no_ai" };
+  const text = await apiStream(input, tier, key, o);
+  if (o.json) { const v = looseJSON(text); if (v === undefined) throw { code: "invalid_json", text }; return v; }
+  return text;
+}
+async function apiStream(input, tier, key, o) {
+  let msgs = typeof input === "string" ? [{ role: "user", content: input }] : input.map(m => ({ ...m }));
+  const merged = [];
+  for (const m of msgs) { const last = merged[merged.length - 1]; if (last && last.role === m.role) last.content += "\n\n" + m.content; else merged.push({ role: m.role, content: m.content }); }
+  if (o.json) merged[merged.length - 1].content += "\n\nReply with only the JSON value, no other text.";
+  if (o.images) {
+    const list = o.images instanceof Blob ? [o.images] : [...o.images];
+    const blocks = [];
+    for (const b of list) { const data = await blobToB64(b); blocks.push({ type: "image", source: { type: "base64", media_type: b.type || "image/png", data } }); }
+    const last = merged[merged.length - 1]; last.content = [...blocks, { type: "text", text: last.content }];
+  }
+  let res;
+  try {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST", signal: o.signal,
+      headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: MODELS[tier] || MODELS.default, max_tokens: 16000, stream: true, messages: merged })
+    });
+  } catch (e) { throw { code: e?.name === "AbortError" ? "cancelled" : "upstream_error", message: String(e?.message || e) }; }
+  if (!res.ok) { const t = await res.text().catch(() => ""); throw { code: res.status === 429 ? "rate_limited" : res.status === 401 ? "bad_key" : "upstream_error", message: t.slice(0, 300) }; }
+  const rd = res.body.getReader(), dec = new TextDecoder(); let buf = "", text = "";
+  try {
+    for (;;) {
+      const { done, value } = await rd.read(); if (done) break;
+      buf += dec.decode(value, { stream: true }); let i;
+      while ((i = buf.indexOf("\n\n")) >= 0) {
+        const ev = buf.slice(0, i); buf = buf.slice(i + 2);
+        const line = ev.split("\n").find(l => l.startsWith("data:")); if (!line) continue;
+        let d; try { d = JSON.parse(line.slice(5)); } catch { continue; }
+        if (d.type === "content_block_delta" && d.delta?.type === "text_delta") { text += d.delta.text; o.onText?.({ text, delta: d.delta.text }); }
+        else if (d.type === "error") throw { code: "upstream_error", message: d.error?.message };
+      }
+    }
+  } catch (e) { if (e?.name === "AbortError") throw { code: "cancelled", text }; throw e.code ? e : { code: "upstream_error", message: String(e), text }; }
+  return text;
+}
+function blobToB64(b) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.onerror = rej; r.readAsDataURL(b); }); }
+function errMsg(e) {
+  const m = {
+    not_granted: "Claudeの利用が許可されていません。ページの権限メニューから許可できます。",
+    rate_limited: "いまは混み合っています。少し待ってからもう一度試してください。",
+    prompt_too_large: "送る内容が大きすぎます。使うソースを減らしてください。",
+    cancelled: "停止しました。",
+    no_ai: "Claudeに接続されていません。設定からAPIキーを入力してください。",
+    bad_key: "APIキーが無効です。設定で確認してください。",
+    invalid_json: "結果の形式を読み取れませんでした。もう一度試してください。",
+    refused: "この内容には回答できませんでした。",
+    images_unavailable: "この環境では画像を読み取れません。",
+    image_rejected: "この画像は読み取れませんでした。",
+    sampling_disabled: "この表示ではClaudeを呼び出せません。",
+    empty_completion: "回答が空でした。依頼を短くしてもう一度試してください。",
+    session_expired: "セッションが切れました。ページを開き直してください。"
+  };
+  return m[e?.code] || ("エラー: " + (e?.message || "不明なエラーです。もう一度試してください。"));
+}
+
+/* ---------- storage ---------- */
+const PART = 50000;
+const Store = {
+  mode: "local", col: null, timers: {}, local: null,
+  async init() {
+    if (window.claude?.use) {
+      try {
+        const [db, user] = await Promise.all([window.claude.use("db").catch(() => null), window.claude.use("user").catch(() => null)]);
+        if (db && user) { const id = await user.id(); if (id) { this.col = db.collection("data/users/" + id); this.mode = "db"; } }
+      } catch (e) { console.warn(e); }
+    }
+  },
+  clean(o) { const c = {}; for (const [k, v] of Object.entries(o)) if (!k.startsWith("_") && v !== undefined && k !== "id") c[k] = v; return JSON.parse(JSON.stringify(c)); },
+  async loadAll() {
+    if (this.mode === "db") {
+      const snap = await this.col.limit(1000).get();
+      const recs = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+      const parts = {}; const out = [];
+      for (const r of recs) { if (r.type === "part") (parts[r.of] ||= []).push(r); else out.push(r); }
+      for (const r of out) if (r.type === "src") { r.text = (parts[r.id] || []).sort((a, b) => a.k - b.k).map(p => p.text).join(""); r._saved = true; }
+      return out;
+    }
+    this.local = lsGet("marginalia.v1", {});
+    return Object.values(this.local).map(r => ({ ...r, _saved: true }));
+  },
+  put(rec, withText) {
+    clearTimeout(this.timers[rec.id]);
+    if (withText) rec._needText = true;
+    this.timers[rec.id] = setTimeout(() => this.write(rec).catch(e => { console.warn(e); toast(e?.code === "quota_exceeded" ? "保存容量の上限に達しました。古いノートブックを削除してください。" : "保存に失敗しました。"); }), 500);
+  },
+  async write(rec) {
+    if (this.mode === "db") {
+      if (rec.type === "src") {
+        const text = rec.text || ""; const meta = this.clean(rec); delete meta.text; meta.parts = Math.ceil(text.length / PART);
+        await this.col.doc(rec.id).set(meta);
+        if (rec._needText) { for (let k = 0; k < meta.parts; k++) await this.col.doc(rec.id + "-p" + k).set({ type: "part", of: rec.id, k, text: text.slice(k * PART, (k + 1) * PART) }); rec._needText = false; }
+      } else await this.col.doc(rec.id).set(this.clean(rec));
+    } else {
+      this.local ||= lsGet("marginalia.v1", {});
+      this.local[rec.id] = { ...this.clean(rec), id: rec.id };
+      if (!lsSet("marginalia.v1", this.local)) toast("ブラウザの保存容量が足りません。大きなソースを削除してください。");
+    }
+    rec._saved = true;
+  },
+  async del(rec) {
+    clearTimeout(this.timers[rec.id]);
+    if (this.mode === "db") {
+      await this.col.doc(rec.id).delete().catch(() => {});
+      if (rec.type === "src") { const n = Math.ceil((rec.text || "").length / PART); for (let k = 0; k < n; k++) await this.col.doc(rec.id + "-p" + k).delete().catch(() => {}); }
+    } else { this.local ||= lsGet("marginalia.v1", {}); delete this.local[rec.id]; lsSet("marginalia.v1", this.local); }
+  }
+};
+
+/* ---------- state ---------- */
+const S = {
+  notebooks: [], sources: [], notes: [], cur: null, tab: "chat",
+  settings: Object.assign({ depth: "default", lang: "ja", mode: "grounded" }, lsGet("marginalia.settings", {})),
+  running: [], chatCtl: null
+};
+const nb = () => S.notebooks.find(n => n.id === S.cur);
+const nbSources = () => S.sources.filter(s => s.nbId === S.cur).sort((a, b) => a.num - b.num);
+const nbNotes = () => S.notes.filter(n => n.nbId === S.cur).sort((a, b) => b.createdAt - a.createdAt);
+const activeSources = () => nbSources().filter(s => s.enabled !== false && !s._loading);
+function saveSettings() { lsSet("marginalia.settings", S.settings); }
+function touch(rec, withText) { rec.updatedAt = Date.now(); ensurePersisted(rec.nbId || rec.id); Store.put(rec, withText); }
+function ensurePersisted(nbId) {
+  const n = S.notebooks.find(x => x.id === nbId); if (!n || !n._sample) return;
+  n._sample = false; Store.put(n);
+  S.sources.filter(s => s.nbId === nbId).forEach(s => Store.put(s, true));
+  S.notes.filter(s => s.nbId === nbId).forEach(s => Store.put(s));
+}
+
+/* ---------- chunking & context ---------- */
+const chunkCache = new Map();
+function chunkText(text) {
+  const paras = String(text || "").replace(/\r/g, "").split(/\n\s*\n+/).map(p => p.trim()).filter(Boolean);
+  const out = [];
+  const piece = p => {
+    if (p.length <= 1100) { out.push(p); return; }
+    const sents = p.match(/[^。．.!?！？\n]+[。．.!?！？]*\s*|\n/g) || [p];
+    let b = "";
+    for (let s of sents) {
+      while (s.length > 900) { if (b) { out.push(b.trim()); b = ""; } out.push(s.slice(0, 900)); s = s.slice(900); }
+      if ((b + s).length > 800 && b.trim()) { out.push(b.trim()); b = ""; }
+      b += s;
+    }
+    if (b.trim()) out.push(b.trim());
+  };
+  let buf = "";
+  for (const p of paras) { buf = buf ? buf + "\n" + p : p; if (buf.length >= 60) { piece(buf); buf = ""; } }
+  if (buf) { if (out.length && buf.length < 60) out[out.length - 1] += "\n" + buf; else piece(buf); }
+  return out;
+}
+function chunksOf(s) {
+  const key = s.id + ":" + (s.text || "").length;
+  if (!chunkCache.has(key)) chunkCache.set(key, chunkText(s.text));
+  return chunkCache.get(key);
+}
+function grams(s) {
+  s = s.toLowerCase(); const set = new Set();
+  (s.match(/[a-z0-9]{2,}/g) || []).forEach(w => set.add(w));
+  for (const seg of s.replace(/[^぀-ヿ㐀-鿿ｦ-ﾟ]+/g, " ").split(" ")) for (let i = 0; i < seg.length - 1; i++) set.add(seg.slice(i, i + 2));
+  return set;
+}
+function buildContext(query, budget = 170000, sources = activeSources()) {
+  const items = [];
+  sources.forEach(s => chunksOf(s).forEach((c, i) => items.push({ s, i, id: `S${s.num}.${i + 1}`, text: c, b: bytes(c) + 14 })));
+  const total = items.reduce((a, x) => a + x.b, 0);
+  let picked = items, partial = false;
+  if (total > budget) {
+    partial = true;
+    if (query) {
+      const q = [...grams(query)]; const gs = items.map(x => grams(x.text)); const N = items.length;
+      const df = {}; q.forEach(g => df[g] = gs.reduce((a, set) => a + (set.has(g) ? 1 : 0), 0));
+      items.forEach((x, k) => { x.score = q.reduce((a, g) => a + (gs[k].has(g) ? Math.log(1 + N / (1 + df[g])) : 0), 0); });
+      const order = items.slice().sort((a, b) => b.score - a.score); picked = []; let used = 0;
+      for (const x of order) { if (used + x.b > budget) continue; picked.push(x); used += x.b; }
+    } else {
+      const r = budget / total; let acc = 0; picked = [];
+      for (const x of items) { acc += r; if (acc >= 1) { acc -= 1; picked.push(x); } }
+    }
+    const pos = new Map(items.map((x, k) => [x, k])); picked.sort((a, b) => pos.get(a) - pos.get(b));
+  }
+  let text = ""; let cur = null;
+  for (const x of picked) {
+    if (x.s !== cur) { if (cur) text += "</source>\n"; cur = x.s; text += `<source id="S${x.s.num}" title="${esc(x.s.title)}" type="${x.s.kind}${x.s.kind === "ai" ? " (AI生成の入門資料)" : ""}">\n`; }
+    text += `[${x.id}] ${x.text}\n`;
+  }
+  if (cur) text += "</source>\n";
+  return { text, partial, n: picked.length, total: items.length, sources: sources.length };
+}
+function findRef(ref) {
+  const m = /^S(\d+)\.(\d+)$/.exec(ref); if (!m) return null;
+  const s = nbSources().find(x => x.num === +m[1]); if (!s) return null;
+  const ch = chunksOf(s)[+m[2] - 1];
+  return { s, idx: +m[2] - 1, text: ch || "" };
+}
+
+/* ---------- markdown + citations ---------- */
+marked.setOptions({ gfm: true, breaks: false });
+function citeBtn(ref) { const f = findRef(ref); const label = ref.slice(1).replace(".", "·"); const title = f ? `${f.s.title} — ${f.text.slice(0, 90)}…` : ref; return `<button type="button" class="cite" data-ref="${ref}" title="${esc(title)}">${label}</button>`; }
+function linkCites(md) {
+  return md.replace(/[\[［]((?:S\d+\.\d+)(?:\s*[,、，;]\s*S\d+\.\d+)*)[\]］]/g, (_, g) => g.split(/\s*[,、，;]\s*/).map(citeBtn).join(""))
+           .replace(/〔一般知識〕/g, '<span class="gk">一般知識</span>');
+}
+function md(text) { return DOMPurify.sanitize(marked.parse(linkCites(String(text || "")))); }
+function refsHTML(refs) { return arr(refs).filter(r => /^S\d+\.\d+$/.test(r)).map(citeBtn).join(""); }
+function inl(text) { return DOMPurify.sanitize(marked.parseInline(linkCites(String(text || "")))); }
+
+/* ---------- prompts ---------- */
+function langLine() { return S.settings.lang === "en" ? "Write everything in English." : S.settings.lang === "auto" ? "ソースの主要な言語で書くこと。" : "日本語で書くこと。"; }
+function focusLine() { const f = $("#focus").value.trim(); return f ? `- 特に次の観点・条件を優先すること: ${f}\n` : ""; }
+function studioPrompt(task, ctx, format) {
+  return `あなたはリサーチノートブック「Marginalia」の執筆アシスタントです。
+タスク: ${task}
+
+ルール:
+- 下の <sources> の内容だけに基づくこと。ソースにない事実を足さない。
+- 根拠となるパッセージIDを [S1.2] の形式で示すこと。存在するIDだけを使う。
+- ${langLine()}
+${focusLine()}${ctx.partial ? "- ソースが大きいため、全体から均等に抜き出したパッセージだけを示している。\n" : ""}
+<sources>
+${ctx.text}</sources>
+
+${format}`;
+}
+const MODES = {
+  grounded: { label: "根拠のみ", rule: "ソースに書かれていることだけで答える。ソースで答えられない場合はそう明言し、関連してソースに何が書かれているかを示す。" },
+  expert: { label: "知識も使う", rule: "まずソースに基づいて答え、必要ならあなた自身の一般知識で補ってよい。ただし一般知識による文には文末に「〔一般知識〕」と付け、ソースの記述とはっきり区別する。" },
+  tutor: { label: "先生", rule: "ユーザーの理解を深める家庭教師として振る舞う。答えを一度に全部言わず、ヒント・問いかけ・身近な例で段階的に導く。最後に理解を確かめる質問を1つする。" },
+  critic: { label: "批評家", rule: "ソースの主張を鵜呑みにせず、根拠の強さ、前提、論理の飛躍、ソース間の食い違いを指摘しながら答える。" }
+};
+function chatRules(ctx) {
+  return `あなたはリサーチノートブック「Marginalia」のアシスタントです。ユーザーが追加したソース（<sources>）について対話します。
+
+回答ルール:
+- ${MODES[S.settings.mode]?.rule || MODES.grounded.rule}
+- ソースに基づく文には、その文の直後に根拠のパッセージIDを [S1.2] の形で付ける。複数なら [S1.2][S2.4]。存在しないIDは絶対に作らない。
+- Markdownを使い、見出しや箇条書きは必要なときだけ。簡潔に。
+- ユーザーの質問と同じ言語で答える。
+- 回答の最後に改行し、「>>>」で始まる1行に、ユーザーが次に聞くと良い短い質問を3つJSON配列で書く。例: >>> ["…","…","…"]
+${ctx.partial ? "- ソースが大きいため、質問に関連しそうなパッセージだけを示している。足りない場合はそう伝える。\n" : ""}
+<sources>
+${ctx.text}</sources>`;
+}
+
+/* ---------- sample notebook (shown until the viewer has their own) ---------- */
+const SAMPLE_SRC1 = `睡眠と記憶の固定化（講義ノート・サンプル）
+
+ヒトの睡眠は、ノンレム睡眠（N1〜N3）とレム睡眠がおよそ90分の周期で繰り返される。夜の前半には深いノンレム睡眠（徐波睡眠、N3）が多く、明け方に近づくほどレム睡眠の割合が増える。このため、睡眠時間を削ると、主に後半のレム睡眠が失われやすい。
+
+徐波睡眠中には、日中に経験した出来事に関わる海馬の神経活動が、短い時間に圧縮されて再生される現象（リプレイ）が観察されている。このリプレイは、大脳皮質の徐波、視床由来の睡眠紡錘波、海馬の鋭波リップルという3種類の脳波がタイミングよく重なるときに起きやすい。
+
+こうした観察から「能動的システム固定化」仮説が提案されている。これは、海馬に一時的に保存された記憶が、睡眠中のリプレイを通じて新皮質へ少しずつ移され、長期的な知識として組み込まれるという考え方である。事実や出来事の記憶（宣言的記憶）は徐波睡眠との関連が、運動技能などの手続き記憶は睡眠紡錘波が多いN2睡眠との関連が多く報告されている。
+
+別の有力な考え方に「シナプス恒常性仮説」がある。覚醒中の学習でシナプスは全体として強まり続けるが、睡眠中にそれが全体的に弱められ（ダウンスケーリング）、エネルギー消費を抑えつつ、重要な結びつきが相対的に際立つとする。2つの仮説は対立するものではなく、両方が同時に働いている可能性も議論されている。
+
+睡眠不足は、学習した後だけでなく学習する前にも悪影響を与える。一晩徹夜した人は、十分に眠った人に比べて新しい情報を覚える成績が低く、記憶の入り口である海馬の活動も弱かったという実験報告がある（Yooら、2007年）。
+
+睡眠中にまったく新しい言語的な知識を学習できるかについては、慎重な見方が多い。睡眠中に音を聞かせると既に学んだ記憶の再活性化を後押しできる（標的記憶再活性化、TMR）という研究はあるが、睡眠中に初めて聞いた単語の意味をそのまま覚えるといった効果は、確かな形では示されていない。`;
+const SAMPLE_SRC2 = `昼寝で頭が良くなる？ 最新研究まとめ（ブログ記事・サンプル）
+
+仕事や勉強の合間の昼寝、うまく使えていますか？ この記事では、昼寝と学習について知られていることをまとめます。
+
+まず基本。10〜20分程度の短い昼寝は、眠気を減らして注意力を回復させる効果が期待できます。深い睡眠に入る前に起きるので、起きた直後のぼんやり感（睡眠慣性）も少なめです。
+
+60〜90分の長めの昼寝になると、レム睡眠を含むことがあります。レム睡眠を含む昼寝の後には、離れた概念どうしを結びつける連想課題の成績が上がったという研究もあり、ひらめきとの関係が注目されています。
+
+筆者の考えでは、記憶を定着させる主役はなんといってもレム睡眠です。夢を見ている間に脳が一日の情報を整理しているので、レム睡眠をしっかり取ることが勉強の成果に直結します。
+
+さらに、寝ている間に英単語の音声を流しておけば、起きたときには単語を覚えている、という「睡眠学習」も試す価値があります。筆者も毎晩試していて、手ごたえを感じています。
+
+注意点として、夕方以降の長い昼寝は夜の寝つきを悪くすることがあります。昼寝をするなら午後の早い時間帯に、長くても30分程度に抑えるのが無難でしょう。`;
+const SAMPLE_MM = { title: "睡眠と記憶", children: [
+  { label: "睡眠の構造", note: "ノンレムとレムが約90分周期で繰り返す。", refs: ["S1.1"], children: [
+    { label: "前半: 徐波睡眠が多い", refs: ["S1.1"] }, { label: "後半: レム睡眠が増える", refs: ["S1.1"] } ] },
+  { label: "記憶が固まるしくみ", note: "2つの主要な仮説がある。", refs: ["S1.3", "S1.4"], children: [
+    { label: "リプレイと能動的システム固定化", refs: ["S1.2", "S1.3"] }, { label: "シナプス恒常性仮説", refs: ["S1.4"] } ] },
+  { label: "昼寝の使い方", refs: ["S2.2", "S2.3"], children: [
+    { label: "10〜20分: 注意力の回復", refs: ["S2.2"] }, { label: "60〜90分: レムを含み連想課題に関連", refs: ["S2.3"] } ] },
+  { label: "ソース間の食い違い", note: "ブログ記事はレム睡眠と睡眠学習を強調するが、講義ノートはより慎重。", refs: ["S2.4", "S2.5", "S1.6"], children: [
+    { label: "記憶の主役はレム睡眠？", refs: ["S2.4", "S1.3"] }, { label: "睡眠中の新規学習", refs: ["S2.5", "S1.6"] } ] }
+] };
+function loadSample() {
+  const now = Date.now();
+  S.notebooks.push({ id: "nb-sample", type: "nb", title: "サンプル: 睡眠と記憶", createdAt: now, updatedAt: now, chat: [], _sample: true,
+    overview: { summary: "睡眠の構造と記憶の固定化のしくみを解説する講義ノートと、昼寝と学習についてのブログ記事の2本です。講義ノートは研究に基づき慎重に書かれている一方、ブログ記事には筆者の個人的な意見も含まれ、両者の主張には食い違いがあります。", questions: ["睡眠中のリプレイとは何ですか？", "2つのソースで主張が食い違っている点は？", "効果的な昼寝の長さは？", "徹夜は記憶にどう影響しますか？"] } });
+  S.sources.push({ id: "src-sample1", type: "src", nbId: "nb-sample", num: 1, kind: "text", title: "睡眠と記憶の固定化（講義ノート）", text: SAMPLE_SRC1, enabled: true, addedAt: now,
+    guide: { summary: "睡眠段階の周期、徐波睡眠中の海馬リプレイ、能動的システム固定化仮説とシナプス恒常性仮説、睡眠不足が学習前の記憶形成に与える影響を解説している。", topics: ["徐波睡眠", "海馬リプレイ", "システム固定化", "シナプス恒常性", "睡眠不足"] } });
+  S.sources.push({ id: "src-sample2", type: "src", nbId: "nb-sample", num: 2, kind: "text", title: "昼寝で頭が良くなる？（ブログ記事）", text: SAMPLE_SRC2, enabled: true, addedAt: now + 1,
+    guide: { summary: "短い昼寝と長い昼寝の効果の違いを紹介し、筆者の意見としてレム睡眠の重要性と睡眠学習を勧めている。", topics: ["昼寝", "睡眠慣性", "レム睡眠", "睡眠学習"] } });
+  S.notes.push({ id: "note-sample-mm", type: "note", nbId: "nb-sample", kind: "mindmap", title: "マインドマップ: 睡眠と記憶（サンプル）", data: SAMPLE_MM, createdAt: now });
+}
+
+/* ---------- rendering: top ---------- */
+function renderStatus() {
+  const el = $("#aiStatus");
+  el.classList.remove("on", "off");
+  let label;
+  if (!AI.checked) label = "接続を確認中…";
+  else if (AI.sample) { el.classList.add("on"); label = "Claude 接続中"; }
+  else if (apiKey()) { el.classList.add("on"); label = "APIキーで接続"; }
+  else { el.classList.add("off"); label = "Claude 未接続"; }
+  el.querySelector("span").textContent = label;
+  el.title = label;
+}
+function renderTop() {
+  const sel = $("#nbSelect");
+  sel.innerHTML = S.notebooks.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).map(n => `<option value="${esc(n.id)}"${n.id === S.cur ? " selected" : ""}>${esc(n.title || "無題")}</option>`).join("");
+  $("#nbTitle").value = nb()?.title || "";
+}
+
+/* ---------- rendering: sources ---------- */
+const KIND_LABEL = { text: "TXT", pdf: "PDF", image: "IMG", md: "MD", csv: "CSV", html: "WEB", note: "MEMO", ai: "AI生成", json: "JSON", paste: "TXT" };
+function renderSources() {
+  const list = nbSources();
+  const body = $("#srcBody");
+  if (!list.length) {
+    body.innerHTML = `<div class="empty"><strong>ソースがまだありません</strong>PDF、テキスト、画像などを追加すると、その内容に基づいてClaudeが答えます。<br><br><button class="btn primary" type="button" data-act="add-src">＋ ソースを追加</button></div>`;
+  } else {
+    const allOn = list.every(s => s.enabled !== false);
+    body.innerHTML = `<label class="selall"><input type="checkbox" id="selAll"${allOn ? " checked" : ""}> すべてのソースを使う</label>
+    <ul class="src-list">${list.map(s => `
+      <li class="src${s._loading ? " loading" : ""}">
+        ${s._loading ? '<span class="spin" aria-hidden="true"></span>' : `<input type="checkbox" data-toggle="${s.id}" aria-label="${esc(s.title)} を使う"${s.enabled !== false ? " checked" : ""}>`}
+        <button type="button" class="src-open" data-open-src="${s.id}"${s._loading ? " disabled" : ""}>
+          <span class="src-title">${esc(s.title)}</span>
+          <span class="src-meta"><span class="tag${s.kind === "ai" ? " ai" : ""}">${KIND_LABEL[s.kind] || "TXT"}</span>S${s.num} · ${s._loading ? esc(s._loading) : fmtN((s.text || "").length) + "字"}</span>
+        </button>
+        ${s._loading ? "" : `<button type="button" class="src-del" data-del-src="${s.id}" aria-label="${esc(s.title)} を削除" title="削除">✕</button>`}
+      </li>`).join("")}</ul>`;
+  }
+  const act = activeSources(); const chars = act.reduce((a, s) => a + (s.text || "").length, 0);
+  const ctx = { partial: act.reduce((a, s) => a + bytes(s.text || ""), 0) > 160000 };
+  $("#srcFoot").innerHTML = act.length
+    ? `${act.length}/${list.length} 件を使用 · 約${fmtN(chars)}字${ctx.partial ? "<br>大きいので、質問ごとに関連部分を選んで使います" : ""}<div class="meter"><i style="width:${Math.min(100, Math.round(chars / 600))}%"></i></div>`
+    : (list.length ? "使うソースが選ばれていません" : "");
+  $("#ctxInfo").textContent = act.length ? `${act.length}件のソースに基づいて回答` : "ソースを追加してください";
+}
+
+/* ---------- rendering: chat ---------- */
+function renderModes() {
+  $("#modes").innerHTML = Object.entries(MODES).map(([k, m]) => `<button type="button" class="mode" data-mode="${k}" aria-pressed="${S.settings.mode === k}">${m.label}</button>`).join("");
+}
+function splitFollow(text) {
+  const i = text.search(/\n?\s*>>>/);
+  if (i < 0) return { body: text, follow: [] };
+  const tail = text.slice(i).replace(/^\s*>>>\s*/, "");
+  const v = looseJSON(tail);
+  return { body: text.slice(0, i).trimEnd(), follow: Array.isArray(v) ? v.filter(x => typeof x === "string").slice(0, 4) : [] };
+}
+function msgHTML(m, k) {
+  if (m.role === "user") return `<div class="msg user"><div class="bubble">${esc(m.content)}</div></div>`;
+  const { body, follow } = splitFollow(m.content || "");
+  const inner = m.pending && !body ? `<span class="thinking">ソースを読んでいます…</span>` : `<div class="prose">${md(body)}</div>`;
+  return `<div class="msg ai" data-k="${k}"><div class="bubble">${inner}${m.error ? `<div class="err">${esc(m.error)}</div>` : ""}</div>
+    ${m.pending ? `<div class="acts"><button class="btn sm" type="button" data-act="stop-chat">停止</button></div>` : body ? `<div class="acts">
+      <button class="btn sm ghost" type="button" data-act="save-msg" data-k="${k}">メモに保存</button>
+      <button class="btn sm ghost" type="button" data-act="copy-msg" data-k="${k}">コピー</button>
+      ${AI.tts ? `<button class="btn sm ghost" type="button" data-act="speak-msg" data-k="${k}">読み上げ</button>` : ""}
+    </div>${follow.length && k === nb().chat.length - 1 ? `<div class="chips">${follow.map(q => `<button class="chip" type="button" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div>` : ""}` : ""}
+  </div>`;
+}
+function overviewHTML() {
+  const n = nb(); const srcs = nbSources(); const ov = n.overview;
+  if (!srcs.length) return `<div class="overview"><h3>${esc(n.title || "新しいノートブック")}</h3><p>まずソースを追加しましょう。論文、議事録、教科書のPDF、スクリーンショット、メモなど、何でも構いません。追加した資料だけを根拠に、Claudeが引用付きで答えます。</p><button class="btn primary" type="button" data-act="add-src">＋ ソースを追加</button></div>`;
+  const qs = arr(ov?.questions).length ? ov.questions : srcs.flatMap(s => arr(s.guide?.questions)).slice(0, 4);
+  return `<div class="overview">
+    <div class="ov-meta">${srcs.length}件のソース${n._sample ? " · サンプルのノートブック" : ""}</div>
+    <h3>${esc(n.title || "無題のノートブック")}</h3>
+    ${ov?.summary ? `<p>${esc(ov.summary)}</p>` : `<p class="hint">${aiReady() ? "ソース全体の概要と、最初に聞くと良い質問を作れます。" : ""}</p>`}
+    ${qs.length ? `<div class="chips">${qs.map(q => `<button class="chip" type="button" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div>` : ""}
+    <div style="margin-top:10px"><button class="btn sm ghost" type="button" data-act="overview">${ov?.summary ? "概要を作り直す" : "概要を作成"}</button></div>
+  </div>`;
+}
+function renderChat(keepScroll) {
+  const box = $("#chatScroll"); const n = nb(); if (!n) return;
+  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+  box.innerHTML = overviewHTML() + (n.chat || []).map(msgHTML).join("");
+  if (!keepScroll || atBottom) box.scrollTop = box.scrollHeight;
+}
+let rafPending = false;
+function renderLastMsg() {
+  if (rafPending) return; rafPending = true;
+  requestAnimationFrame(() => {
+    rafPending = false; const n = nb(); const k = n.chat.length - 1; const el = $(`.msg.ai[data-k="${k}"]`);
+    const box = $("#chatScroll"); const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 120;
+    if (el) el.outerHTML = msgHTML(n.chat[k], k); else renderChat(true);
+    if (atBottom) box.scrollTop = box.scrollHeight;
+  });
+}
+async function sendChat(q) {
+  q = q.trim(); if (!q) return;
+  const n = nb();
+  if (S.chatCtl) return;
+  if (!aiReady()) { toast(errMsg({ code: "no_ai" })); openSettings(); return; }
+  if (!activeSources().length) { toast("使うソースを1つ以上選んでください。"); return; }
+  n.chat ||= [];
+  const hist = n.chat.filter(m => !m.error && m.content).slice(-12).map(m => ({ role: m.role, content: m.role === "assistant" ? splitFollow(m.content).body || "…" : m.content }));
+  n.chat.push({ role: "user", content: q });
+  const a = { role: "assistant", content: "", pending: true }; n.chat.push(a);
+  $("#q").value = ""; autoGrow(); renderChat(); setSendState(true);
+  const ctx = buildContext(q, 160000);
+  const input = [{ role: "user", content: chatRules(ctx) }, ...hist, { role: "user", content: q }];
+  S.chatCtl = new AbortController();
+  try {
+    const text = await ask(input, { signal: S.chatCtl.signal, onText: ({ text }) => { a.content = text; renderLastMsg(); } });
+    a.content = text;
+  } catch (e) {
+    if (e?.text) a.content = e.text;
+    a.error = errMsg(e);
+  } finally {
+    a.pending = false; S.chatCtl = null; setSendState(false);
+    while (n.chat.length > 40) n.chat.shift();
+    while (JSON.stringify(n.chat).length > 180000 && n.chat.length > 2) n.chat.shift();
+    renderChat(true); touch(n);
+  }
+}
+function setSendState(busy) {
+  const b = $("#send");
+  b.innerHTML = busy ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="1.5"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  b.setAttribute("aria-label", busy ? "停止" : "送信");
+}
+function autoGrow() { const t = $("#q"); t.style.height = "auto"; t.style.height = Math.min(180, t.scrollHeight) + "px"; }
+async function makeOverview() {
+  const n = nb(); const srcs = nbSources().filter(s => !s._loading);
+  if (!srcs.length || !aiReady()) return;
+  const btn = $('[data-act="overview"]'); if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 作成中…'; }
+  const guides = srcs.map(s => `<source id="S${s.num}" title="${esc(s.title)}">\n要約: ${s.guide?.summary || ""}\nトピック: ${arr(s.guide?.topics).join("、")}\n冒頭: ${(s.text || "").slice(0, 1500)}\n</source>`).join("\n");
+  try {
+    const v = await ask(`次のソース群からなるリサーチノートブックの概要を作ってください。${langLine()}
+JSONだけで返答: {"title":"ノートブックにふさわしい短い名前","summary":"全体の要約を3〜4文。ソース間の違いや関係にも触れる","questions":["最初に聞くと良い具体的な質問","…4つ"]}
+
+${guides}`, { json: true, tier: "quick" });
+    n.overview = { summary: str(v?.summary), questions: arr(v?.questions).map(str).slice(0, 4) };
+    if ((!n.title || /^無題/.test(n.title)) && v?.title) n.title = str(v.title).slice(0, 60);
+    touch(n); renderTop();
+  } catch (e) { toast(errMsg(e)); }
+  renderChat(true);
+}
+
+/* ---------- source ingestion ---------- */
+function nextNum() { return nbSources().reduce((a, s) => Math.max(a, s.num), 0) + 1; }
+function newSource(title, kind) {
+  const s = { id: mkId("src"), type: "src", nbId: S.cur, num: nextNum(), kind, title: title || "無題のソース", text: "", enabled: true, addedAt: Date.now(), _loading: "読み込み中…" };
+  S.sources.push(s); renderSources(); return s;
+}
+async function finishSource(s, text) {
+  s.text = String(text || "").replace(/\u0000/g, "").trim();
+  if (!s.text) { S.sources = S.sources.filter(x => x !== s); renderSources(); toast(`「${s.title}」から文字を取り出せませんでした。`); return; }
+  s._loading = aiReady() ? "ガイドを作成中…" : null; if (!s._loading) delete s._loading;
+  renderSources(); touch(s, true);
+  if (aiReady()) {
+    try {
+      const v = await ask(`次の文書を読み、JSONだけで返答してください。${langLine()}
+{"title":"内容を表す短いタイトル（元のタイトルが適切ならそのまま）","summary":"2〜3文の要約","topics":["キーワード（最大6個）"],"questions":["この文書について聞くと良い具体的な質問を3つ"]}
+
+<document title="${esc(s.title)}">
+${s.text.slice(0, 14000)}
+</document>`, { json: true, tier: "quick" });
+      s.guide = { summary: str(v?.summary), topics: arr(v?.topics).map(str).slice(0, 6), questions: arr(v?.questions).map(str).slice(0, 3) };
+      if (v?.title && (s.kind === "image" || /^(無題|貼り付け|image|scan|IMG_)/i.test(s.title))) s.title = str(v.title).slice(0, 80);
+    } catch (e) { console.warn(e); }
+    delete s._loading; touch(s); renderSources();
+  }
+  return s;
+}
+async function addFiles(files) {
+  closeDlg("#addDlg");
+  setTab("sources");
+  const made = [];
+  for (const f of files) {
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    const isImg = f.type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif"].includes(ext);
+    const isPdf = f.type === "application/pdf" || ext === "pdf";
+    const kind = isPdf ? "pdf" : isImg ? "image" : ext === "md" || ext === "markdown" ? "md" : ext === "csv" || ext === "tsv" ? "csv" : ext === "json" ? "json" : ext === "html" || ext === "htm" ? "html" : "text";
+    const s = newSource(f.name.replace(/\.[^.]+$/, ""), kind);
+    made.push((async () => {
+      try {
+        let text;
+        if (isImg) text = await imageToText([f], s);
+        else if (isPdf) text = await pdfToText(f, s);
+        else if (kind === "html") { const d = new DOMParser().parseFromString(await f.text(), "text/html"); d.querySelectorAll("script,style,noscript,nav,footer").forEach(x => x.remove()); text = (d.body?.innerText || d.body?.textContent || "").replace(/\n{3,}/g, "\n\n"); if (d.title) s.title = d.title; }
+        else text = await f.text();
+        return await finishSource(s, text);
+      } catch (e) { console.warn(e); S.sources = S.sources.filter(x => x !== s); renderSources(); toast(`「${f.name}」を読み込めませんでした: ${e?.code ? errMsg(e) : (e?.message || e)}`); }
+    })());
+  }
+  await Promise.all(made);
+  if (made.length) { makeOverview(); }
+}
+async function imageToText(blobs, s) {
+  if (!AI.sample && !apiKey()) throw { code: "no_ai" };
+  if (AI.sample && !AI.images) throw { code: "images_unavailable" };
+  s._loading = "Claudeが画像を読み取り中…"; renderSources();
+  return ask(`これらの画像を、リサーチ用のソース文書としてテキストに書き起こしてください。
+- 画像内の文字はすべて正確に書き起こす（見出し・段落の構造を保つ）。
+- 図・グラフ・表は、構造と数値がわかるように文章やMarkdownの表で説明する。
+- 写真やイラストは、内容を具体的に描写する。
+- 1行目は「# 」で始まる内容を表すタイトルにする。
+- ${langLine()} ただし画像内の文字は原文のまま書き起こす。`, { images: blobs, tier: "default" });
+}
+let pdfLib;
+function loadScript(src) { return new Promise((res, rej) => { const el = document.createElement("script"); el.src = src; el.onload = res; el.onerror = () => rej(new Error("PDF読み込みライブラリを取得できませんでした")); document.head.append(el); }); }
+async function ensurePdf() {
+  pdfLib ||= (async () => {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js");
+    return window.pdfjsLib;
+  })();
+  return pdfLib;
+}
+async function pdfToText(file, s) {
+  s._loading = "PDFを解析中…"; renderSources();
+  const lib = await ensurePdf();
+  const doc = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false, disableFontFace: true }).promise;
+  const pages = [];
+  for (let p = 1; p <= doc.numPages; p++) {
+    const page = await doc.getPage(p); const tc = await page.getTextContent();
+    let t = ""; for (const it of tc.items) { t += it.str; if (it.hasEOL) t += "\n"; }
+    pages.push(t.replace(/[ \t]+\n/g, "\n").trim());
+    if (p % 5 === 0) { s._loading = `PDFを解析中… ${p}/${doc.numPages}ページ`; renderSources(); }
+  }
+  let text = pages.filter(Boolean).join("\n\n");
+  const meta = await doc.getMetadata().catch(() => null); if (meta?.info?.Title && meta.info.Title.length > 3) s.title = meta.info.Title;
+  if (text.replace(/\s/g, "").length < 40 * doc.numPages && (AI.images || (!AI.sample && apiKey()))) {
+    s._loading = "スキャンPDFをClaudeが読み取り中…"; renderSources();
+    const max = Math.min(doc.numPages, AI.sample ? (AI.imgMax || 1) : 20, 20); const blobs = [];
+    for (let p = 1; p <= max; p++) {
+      const page = await doc.getPage(p); const vp = page.getViewport({ scale: 1.6 });
+      const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
+      await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+      blobs.push(await new Promise(r => c.toBlob(r, "image/jpeg", 0.85)));
+    }
+    text = await imageToText(blobs, s);
+    if (max < doc.numPages) toast(`スキャンPDFは先頭${max}ページだけ読み取りました。`);
+  }
+  return text;
+}
+async function addPaste() {
+  const title = $("#pTitle").value.trim() || "貼り付けたテキスト"; const text = $("#pText").value;
+  if (!text.trim()) { toast("本文を入力してください。"); return; }
+  closeDlg("#addDlg"); setTab("sources");
+  const s = newSource(title, "paste"); $("#pTitle").value = ""; $("#pText").value = "";
+  await finishSource(s, text); makeOverview();
+}
+async function addTopic() {
+  const topic = $("#tTopic").value.trim(); if (!topic) { toast("トピックを入力してください。"); return; }
+  if (!aiReady()) { toast(errMsg({ code: "no_ai" })); return; }
+  closeDlg("#addDlg"); setTab("sources");
+  const s = newSource("入門: " + topic, "ai"); s._loading = "Claudeが執筆中…"; renderSources(); $("#tTopic").value = "";
+  try {
+    const text = await ask(`トピック「${topic}」について、リサーチの出発点になる入門資料を書いてください。
+- 定義、背景と歴史、主要な概念、代表的な論点や議論、よくある誤解、さらに調べるべきキーワードの順に見出しを立てる。
+- 2,500〜4,000字程度。確立した知識を中心にし、不確かな点や学説が分かれる点はそう明記する。
+- 具体的な数値や年代は確信があるものだけを書く。
+- ${langLine()} Markdownで書く。`, { tier: "default" });
+    await finishSource(s, text); makeOverview();
+  } catch (e) { S.sources = S.sources.filter(x => x !== s); renderSources(); toast(errMsg(e)); }
+}
+
+/* ---------- source viewer ---------- */
+function openSource(id, idx) {
+  const s = S.sources.find(x => x.id === id); if (!s) return;
+  $("#srcKind").textContent = KIND_LABEL[s.kind] || "TXT"; $("#srcKind").className = "tag" + (s.kind === "ai" ? " ai" : "");
+  $("#srcH").textContent = `S${s.num}  ${s.title}`;
+  const ch = chunksOf(s);
+  $("#srcView").innerHTML = `${s.guide?.summary ? `<div class="guide"><p>${esc(s.guide.summary)}</p>${arr(s.guide.topics).length ? `<div class="chips">${s.guide.topics.map(t => `<button class="chip" type="button" data-q="${esc(t)}について、ソースではどう説明されていますか？">${esc(t)}</button>`).join("")}</div>` : ""}</div>` : ""}
+  ${s.kind === "ai" ? `<p class="hint">このソースはClaudeが一般知識から書いた入門資料です。一次資料ではありません。</p>` : ""}
+  <div class="hint" style="margin-bottom:8px">${fmtN((s.text || "").length)}字 · ${ch.length}パッセージ · 追加 ${fmtDate(s.addedAt)}</div>
+  ${ch.map((c, i) => `<div class="chunk${i === idx ? " hit" : ""}" id="ch-${i}"><span class="cid">S${s.num}.${i + 1}</span><div class="ct">${esc(c)}</div></div>`).join("")}`;
+  openDlg("#srcDlg");
+  const hit = $("#srcView .chunk.hit");
+  requestAnimationFrame(() => { if (hit) hit.scrollIntoView({ block: "center" }); else $("#srcView").scrollTop = 0; });
+}
+
+/* ---------- studio ---------- */
+const TOOLS = {
+  briefing: { tag: "BRF", label: "ブリーフィング", desc: "要点・根拠・示唆の報告書", type: "md",
+    task: "意思決定者向けのブリーフィング資料を作る。", format: "Markdownで次の構成にする: # タイトル / ## 要旨（3〜5行） / ## 主要なポイント（論点ごとに小見出し） / ## 重要な引用（ソースからの短い原文引用を > で） / ## 未解決の問い / ## 次のアクション。" },
+  study: { tag: "STD", label: "学習ガイド", desc: "要点・確認問題・用語集", type: "md",
+    task: "学習ガイドを作る。", format: "Markdownで次の構成にする: # タイトル / ## 押さえるべき概念（各2〜3文） / ## 確認問題（短答10問。各問の直後に「答え:」） / ## 論述問題（3問、答える観点つき） / ## 用語集（表）。" },
+  faq: { tag: "FAQ", label: "FAQ", desc: "よくある質問と答え", type: "md",
+    task: "ソースを初めて読む人が抱きそうな質問とその答えを作る。", format: "Markdownで、# タイトル の後に 8〜12個の「### Q. 質問」と、その下に簡潔な答え。" },
+  timeline: { tag: "TML", label: "タイムライン", desc: "出来事と登場人物を時系列に", type: "json",
+    task: "出来事の時系列と主な登場人物・組織をまとめる。日付がない内容なら、論理的・概念的な順序（「段階1」など）で並べる。",
+    format: `次のJSONだけを返す: {"title":"","events":[{"date":"時点","title":"出来事","detail":"1〜2文","refs":["S1.2"]}],"cast":[{"name":"","role":"何者で何をしたか","refs":["S1.2"]}]}` },
+  mindmap: { tag: "MAP", label: "マインドマップ", desc: "概念の関係を枝分かれで", type: "json",
+    task: "内容の構造をマインドマップにする。中心テーマから4〜7本の枝、各枝に2〜5個の子、必要なら孫まで（最大4階層）。ラベルは短く（20字以内）。",
+    format: `次のJSONだけを返す: {"title":"中心テーマ","children":[{"label":"","note":"一文の説明","refs":["S1.2"],"children":[{"label":"","note":"","refs":[],"children":[]}]}]}` },
+  flashcards: { tag: "CRD", label: "フラッシュカード", desc: "暗記用の表裏カード", type: "json",
+    task: "重要な知識を暗記用カードにする。15〜25枚。表は問いか用語、裏は簡潔な答え。",
+    format: `次のJSONだけを返す: {"title":"","cards":[{"front":"","back":"","refs":["S1.2"]}]}` },
+  quiz: { tag: "QZ", label: "クイズ", desc: "4択問題と解説", type: "json",
+    task: "理解度を確かめる4択クイズを10問作る。易しい問題から難しい問題まで混ぜ、正解の位置は散らす。誤答の選択肢ももっともらしくする。",
+    format: `次のJSONだけを返す: {"title":"","questions":[{"q":"","choices":["","","",""],"answer":0,"explain":"なぜそれが正解か","refs":["S1.2"]}]}（answerは0始まりの番号）` },
+  slides: { tag: "SLD", label: "スライド", desc: "発表用の構成と原稿", type: "json",
+    task: "発表用スライドの構成を作る。8〜12枚。1枚目は表紙。各スライドは箇条書き3〜5個と、話す内容のメモ。",
+    format: `次のJSONだけを返す: {"title":"","slides":[{"title":"","bullets":[""],"notes":"話す内容","refs":["S1.2"]}]}` },
+  crossexam: { tag: "XEX", label: "論点チェック", desc: "一致・矛盾・抜け・信頼性", type: "json", tier: "complex",
+    task: "ソースどうしを突き合わせて検証する。一致している主張、食い違う主張、どのソースも答えていない重要な問い、各ソースの信頼性を評価する。ソースが1つだけなら、その内部の一貫性と根拠の強さを検証する。",
+    format: `次のJSONだけを返す: {"verdict":"全体の所見を2〜3文","agreements":[{"point":"","refs":["S1.2","S2.1"]}],"conflicts":[{"topic":"","positions":[{"claim":"","refs":["S1.2"]}],"assessment":"どちらがより支持されるか、その理由"}],"gaps":[{"question":"","why":"なぜ重要か"}],"reliability":[{"source":"S1","rating":"高|中|低","reason":""}]}` },
+  table: { tag: "TBL", label: "データ表", desc: "情報を表形式で抽出", type: "json",
+    task: "ソースに含まれる比較可能な情報（項目・数値・特徴など）を抜き出して表にする。フォーカスが指定されていればその列構成に従う。",
+    format: `次のJSONだけを返す: {"title":"","columns":["列名"],"rows":[{"cells":["値"],"refs":["S1.2"]}]}` },
+  custom: { tag: "CUS", label: "自由な指示", desc: "フォーカス欄の指示で作成", type: "md", needsFocus: true,
+    task: "フォーカス欄に書かれたユーザーの指示どおりの文書を作る。", format: "Markdownで書く。" }
+};
+const AUDIO_FORMATS = {
+  deep: "ディープダイブ: 背景から核心へ進み、意外な発見や実生活への示唆まで掘り下げる。",
+  brief: "要点: 最も重要なポイントだけを短くテンポよく伝える。",
+  critique: "批評: ソースの強みと弱み、根拠の質、反論の余地を検討する。",
+  debate: "ディベート: ハルとミナが異なる立場に立って議論し、最後に論点を公平に整理する。"
+};
+const AUDIO_LEN = { short: "12〜16発言", std: "22〜30発言", long: "38〜48発言" };
+const HOSTS = { A: { name: "ハル", voice: "buttery" }, B: { name: "ミナ", voice: "glassy" } };
+function renderTools() {
+  $("#tools").innerHTML = Object.entries(TOOLS).map(([k, t]) => `<button class="tool" type="button" data-tool="${k}"><b><span class="tag">${t.tag}</span>${t.label}</b><span>${t.desc}</span></button>`).join("");
+}
+function renderNotes() {
+  const list = nbNotes();
+  const run = S.running.filter(r => r.nbId === S.cur);
+  $("#notes").innerHTML = run.map(r => `<li><div class="note-item running"><span class="tag">${r.tag}</span><span><div class="t">${esc(r.label)}を作成中…</div><div class="d">${r.status || "ソースを読んでいます"}</div></span><button class="btn sm ghost" type="button" data-stop-run="${r.id}">停止</button></div></li>`).join("")
+    + list.map(n => `<li><button class="note-item" type="button" data-open-note="${n.id}"><span class="tag">${noteTag(n)}</span><span style="min-width:0"><div class="t">${esc(n.title)}</div><div class="d">${fmtDate(n.createdAt)}</div></span><span aria-hidden="true">›</span></button></li>`).join("")
+    + (!list.length && !run.length ? `<li class="empty" style="padding:16px">作った出力やメモがここに保存されます。</li>` : "");
+}
+function noteTag(n) { return n.kind === "audio" ? "AUD" : n.kind === "memo" ? "MEMO" : n.kind === "chat" ? "CHAT" : TOOLS[n.kind]?.tag || "DOC"; }
+async function runTool(kind) {
+  const t = TOOLS[kind];
+  if (!aiReady()) { toast(errMsg({ code: "no_ai" })); openSettings(); return; }
+  if (!activeSources().length) { toast("使うソースを1つ以上選んでください。"); return; }
+  if (t.needsFocus && !$("#focus").value.trim()) { toast("フォーカス欄に指示を書いてください。"); $("#focus").focus(); return; }
+  const r = { id: mkId("run"), nbId: S.cur, tag: t.tag, label: t.label, ctl: new AbortController() };
+  S.running.push(r); renderNotes();
+  const ctx = buildContext("", 190000);
+  const prompt = studioPrompt(t.task, ctx, t.format);
+  const focus = $("#focus").value.trim();
+  try {
+    let note;
+    if (t.type === "md") {
+      const text = await ask(prompt, { signal: r.ctl.signal, tier: t.tier, onText: ({ text }) => { r.status = `${fmtN(text.length)}字…`; renderNotesThrottled(); } });
+      const title = (text.match(/^#\s+(.+)$/m)?.[1] || t.label).trim();
+      note = { kind, md: text, title };
+    } else {
+      const v = await ask(prompt, { json: true, signal: r.ctl.signal, tier: t.tier, onText: ({ text }) => { r.status = `${fmtN(text.length)}字…`; renderNotesThrottled(); } });
+      if (!v || typeof v !== "object") throw { code: "invalid_json" };
+      note = { kind, data: v, title: `${t.label}: ${str(v.title) || nb().title}`.slice(0, 80) };
+    }
+    if (focus && kind !== "custom") note.focus = focus;
+    saveNote(note, true);
+  } catch (e) { if (e?.code !== "cancelled") toast(`${t.label}: ${errMsg(e)}`); }
+  finally { S.running = S.running.filter(x => x !== r); renderNotes(); }
+}
+let notesT;
+function renderNotesThrottled() { if (notesT) return; notesT = setTimeout(() => { notesT = null; renderNotes(); }, 400); }
+function saveNote(o, open) {
+  const n = { id: mkId("note"), type: "note", nbId: S.cur, createdAt: Date.now(), ...o };
+  S.notes.push(n); touch(n); renderNotes();
+  if (open) { if ($("#viewDlg").open) toast(`「${n.title}」ができました`); else openNote(n.id); }
+  return n;
+}
+async function genAudio() {
+  if (!aiReady()) { toast(errMsg({ code: "no_ai" })); openSettings(); return; }
+  if (!activeSources().length) { toast("使うソースを1つ以上選んでください。"); return; }
+  const fmt = $("#auFormat").value, len = $("#auLen").value;
+  const r = { id: mkId("run"), nbId: S.cur, tag: "AUD", label: "音声解説", ctl: new AbortController() };
+  S.running.push(r); renderNotes();
+  const ctx = buildContext("", 180000);
+  const prompt = studioPrompt(`2人のホストが会話するポッドキャスト番組の台本を書く。
+- ハル（A）: 好奇心旺盛な聞き手。素朴な疑問を投げ、身近なたとえで言い換える。
+- ミナ（B）: ソースを深く読み込んだ解説役。具体例や数字を交えて説明する。
+- 形式: ${AUDIO_FORMATS[fmt]}
+- 長さ: ${AUDIO_LEN[len]}。
+- 自然な話し言葉。Markdown、記号、箇条書き、パッセージIDは本文に入れない。1発言は180字以内。
+- 冒頭は聞き手を引き込むひと言から入り、番組名などの固有名は出さない。終盤で要点を振り返る。
+- ときどき短い相づちや驚きの反応も入れて、本当の会話のようにする。
+- ソースの主張と、ホスト自身の感想ははっきり区別する。`, ctx,
+    `次のJSONだけを返す: {"title":"エピソードのタイトル","lines":[{"s":"A","t":"発言"},{"s":"B","t":"発言"}]}`);
+  try {
+    const v = await ask(prompt, { json: true, signal: r.ctl.signal, onText: ({ text }) => { r.status = `台本 ${fmtN(text.length)}字…`; renderNotesThrottled(); } });
+    const lines = arr(v?.lines).map(l => ({ s: l?.s === "B" ? "B" : "A", t: str(l?.t).trim() })).filter(l => l.t);
+    if (!lines.length) throw { code: "invalid_json" };
+    saveNote({ kind: "audio", title: `音声解説: ${str(v.title) || nb().title}`.slice(0, 80), data: { title: str(v.title), format: fmt, lines } }, true);
+  } catch (e) { if (e?.code !== "cancelled") toast(`音声解説: ${errMsg(e)}`); }
+  finally { S.running = S.running.filter(x => x !== r); renderNotes(); }
+}
+
+/* ---------- output viewer ---------- */
+let curNote = null;
+function openNote(id) {
+  const n = S.notes.find(x => x.id === id); if (!n) return;
+  curNote = n; Player.stop();
+  $("#vTag").textContent = noteTag(n); $("#vTitle").value = n.title;
+  $("#vDel").textContent = "削除"; $("#vDel").classList.remove("confirm");
+  renderNoteBody(n);
+  openDlg("#viewDlg");
+  $("#viewDlg .d-body").scrollTop = 0;
+}
+function renderNoteBody(n) {
+  const b = $("#vBody"); const d = n.data || {};
+  const focusNote = n.focus ? `<p class="hint">フォーカス: ${esc(n.focus)}</p>` : "";
+  switch (n.kind) {
+    case "memo":
+      b.innerHTML = `<textarea class="memo-edit" id="memoEdit" aria-label="メモ">${esc(n.md || "")}</textarea><p class="hint">自動で保存されます。「ソースに追加」でこのメモもチャットの根拠にできます。</p>`;
+      $("#memoEdit").addEventListener("input", e => { n.md = e.target.value; touch(n); });
+      break;
+    case "audio": renderPlayer(n); break;
+    case "mindmap": renderMindmap(n); break;
+    case "timeline":
+      b.innerHTML = focusNote + `<ol class="tl">${arr(d.events).map(e => `<li><div class="dt">${esc(e.date)}</div><div><h4>${esc(e.title)}</h4><p>${inl(e.detail)} ${refsHTML(e.refs)}</p></div></li>`).join("")}</ol>
+        ${arr(d.cast).length ? `<h3 style="font-family:var(--f-display);margin:20px 0 6px">登場人物・組織</h3><div class="cast">${d.cast.map(c => `<div><b>${esc(c.name)}</b><br><span class="hint">${inl(c.role)}</span> ${refsHTML(c.refs)}</div>`).join("")}</div>` : ""}`;
+      break;
+    case "flashcards": renderCards(n); break;
+    case "quiz": renderQuiz(n); break;
+    case "slides": renderSlides(n, 0); break;
+    case "crossexam": {
+      const rc = r => /高|high/i.test(r) ? "h" : /低|low/i.test(r) ? "l" : "m";
+      b.innerHTML = `<div class="xx">${focusNote}<div class="verdict">${inl(d.verdict)}</div>
+        <h3>食い違う主張 <span class="hint">${arr(d.conflicts).length}件</span></h3>${arr(d.conflicts).map(c => `<div class="card"><b>${esc(c.topic)}</b>${arr(c.positions).map((p, i) => `<div class="pos"><b>${"ABCDE"[i] || i + 1}</b><div>${inl(p.claim)} ${refsHTML(p.refs)}</div></div>`).join("")}<div class="assess">${inl(c.assessment)}</div></div>`).join("") || '<p class="hint">大きな食い違いは見つかりませんでした。</p>'}
+        <h3>一致している点</h3>${arr(d.agreements).map(a => `<div class="card">${inl(a.point)} ${refsHTML(a.refs)}</div>`).join("") || '<p class="hint">なし</p>'}
+        <h3>どのソースも答えていない問い</h3>${arr(d.gaps).map(g => `<div class="card"><b>${esc(g.question)}</b><div class="hint">${esc(g.why)}</div><button class="btn sm ghost" type="button" data-ask-chat="${esc(g.question)}">チャットで聞く</button></div>`).join("") || '<p class="hint">なし</p>'}
+        <h3>ソースの信頼性</h3>${arr(d.reliability).map(r => { const s = nbSources().find(x => "S" + x.num === str(r.source)); return `<div class="card"><span class="rate ${rc(str(r.rating))}">${esc(r.rating)}</span> <b>${esc(r.source)} ${esc(s?.title || r.title || "")}</b><div>${inl(r.reason)}</div></div>`; }).join("")}
+      </div>`;
+      break;
+    }
+    case "table": {
+      const cols = arr(d.columns), rows = arr(d.rows);
+      b.innerHTML = focusNote + `<div class="tbl-wrap"><table class="tbl"><thead><tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}<th>出典</th></tr></thead><tbody>${rows.map(r => `<tr>${cols.map((_, i) => `<td>${inl(arr(r.cells)[i])}</td>`).join("")}<td>${refsHTML(r.refs)}</td></tr>`).join("")}</tbody></table></div>
+        <div style="margin-top:10px"><button class="btn sm" type="button" data-act="csv">CSVで書き出す</button></div>`;
+      break;
+    }
+    default:
+      b.innerHTML = focusNote + `<div class="prose">${md(n.md || "")}</div>`;
+  }
+}
+function renderMindmap(n) {
+  const d = n.data || {}; const b = $("#vBody");
+  n._open ||= new Set(["r"]);
+  const walk = (node, path, depth) => {
+    const kids = arr(node.children); const open = n._open.has(path);
+    const cls = depth === 0 ? "root" : depth === 1 ? "d1" : "";
+    return `<div class="mm-node"><span class="mm-pill ${cls}${kids.length ? "" : " leaf"}" data-mm="${path}" role="button" tabindex="0">${esc(depth === 0 ? (d.title || n.title) : node.label)}${kids.length ? `<button class="mm-tog" type="button" data-mmt="${path}" aria-label="${open ? "閉じる" : "開く"}">${open ? "−" : "+"}</button>` : ""}</span>
+      ${kids.length && open ? `<div class="mm-kids">${kids.map((k, i) => walk(k, path + "." + i, depth + 1)).join("")}</div>` : ""}</div>`;
+  };
+  if (n._open.size === 1) arr(d.children).forEach((_, i) => n._open.add("r." + i));
+  b.innerHTML = `<div class="d-acts" style="margin-bottom:6px"><button class="btn sm ghost" type="button" data-act="mm-all">すべて開く</button><button class="btn sm ghost" type="button" data-act="mm-none">たたむ</button></div>
+    <div class="mm-wrap">${walk({ children: d.children }, "r", 0)}</div><div id="mmDetail"></div>`;
+  if (n._sel) showMMDetail(n, n._sel);
+}
+function mmNode(n, path) { let node = { label: n.data.title, children: n.data.children }; for (const i of path.split(".").slice(1)) node = arr(node.children)[+i]; return node; }
+function showMMDetail(n, path) {
+  n._sel = path; $$(".mm-pill").forEach(p => p.classList.toggle("sel", p.dataset.mm === path));
+  const node = mmNode(n, path); if (!node) return;
+  const label = node.label || n.data.title;
+  $("#mmDetail").innerHTML = `<div class="mm-detail"><h4>${esc(label)}</h4>${node.note ? `<p style="margin:0 0 6px">${inl(node.note)}</p>` : ""}${refsHTML(node.refs)}
+    <div style="margin-top:8px"><button class="btn sm primary" type="button" data-ask-chat="「${esc(label)}」について、ソースに基づいて詳しく説明してください。">チャットで詳しく聞く</button></div></div>`;
+}
+function renderCards(n) {
+  const cards = arr(n.data?.cards); const b = $("#vBody");
+  n.data.known = arr(n.data.known);
+  n._deck ||= cards.map((_, i) => i).filter(i => !n.data.known.includes(i));
+  if (!n._deck.length) { b.innerHTML = `<div class="fc-stage"><p class="score">全${cards.length}枚 覚えました</p><button class="btn primary" type="button" data-act="fc-reset">最初からやり直す</button></div>`; return; }
+  const i = n._deck[0]; const c = cards[i];
+  b.innerHTML = `<div class="fc-stage">
+    <div class="prog">残り ${n._deck.length} 枚 · 覚えた ${n.data.known.length}/${cards.length}</div>
+    <div class="fc" id="fc" data-fc role="button" tabindex="0" aria-label="カードをめくる"><div class="fc-in"><div class="fc-face"><small>表</small>${esc(c.front)}</div><div class="fc-face back"><small>裏</small><div>${inl(c.back)}</div><div style="margin-top:10px">${refsHTML(c.refs)}</div></div></div></div>
+    <div class="fc-bar"><button class="btn" type="button" data-act="fc-again">もう一度</button><button class="btn" type="button" data-act="fc-flip">めくる（スペース）</button><button class="btn primary" type="button" data-act="fc-known">覚えた</button></div>
+  </div>`;
+}
+function renderQuiz(n) {
+  const qs = arr(n.data?.questions); n._ans ||= {};
+  const done = Object.keys(n._ans).length; const right = Object.entries(n._ans).filter(([k, v]) => qs[k] && +v === +qs[k].answer).length;
+  $("#vBody").innerHTML = `<div class="qz">
+    <div class="prog">${done}/${qs.length}問回答 · 正解 ${right}</div>
+    ${qs.map((q, k) => { const a = n._ans[k]; const answered = a !== undefined; return `<div class="qz-q"><h4>Q${k + 1}. ${esc(q.q)}</h4><div class="qz-c">${arr(q.choices).map((c, i) => `<button type="button" data-qz="${k}:${i}"${answered ? " disabled" : ""} class="${answered && i === +q.answer ? "right" : answered && i === +a ? "wrong" : ""}"><span class="k">${"ABCD"[i]}</span><span>${esc(c)}</span></button>`).join("")}</div>${answered ? `<div class="qz-x"><b>${+a === +q.answer ? "正解" : "不正解"}</b> — ${inl(q.explain)} ${refsHTML(q.refs)}</div>` : ""}</div>`; }).join("")}
+    ${done === qs.length && qs.length ? `<div class="qz-q"><div class="score">${right} / ${qs.length}</div><p>${right === qs.length ? "全問正解です。" : "間違えた問題の解説と出典を確認しましょう。"}</p><button class="btn" type="button" data-act="qz-reset">もう一度解く</button></div>` : ""}
+  </div>`;
+}
+function renderSlides(n, k) {
+  const sl = arr(n.data?.slides); if (!sl.length) { $("#vBody").innerHTML = "<p>スライドがありません。</p>"; return; }
+  k = Math.max(0, Math.min(sl.length - 1, k)); n._k = k; const s = sl[k];
+  $("#vBody").innerHTML = `<div class="sl-stage">
+    <div class="slide${k === 0 ? " cover" : ""}"><h3>${esc(s.title)}</h3>${arr(s.bullets).length ? `<ul>${s.bullets.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}<div class="sn">${k + 1} / ${sl.length}</div></div>
+    <div class="sl-nav"><button class="btn" type="button" data-slide="${k - 1}"${k === 0 ? " disabled" : ""}>← 前へ</button><span class="prog">${k + 1} / ${sl.length}</span><button class="btn" type="button" data-slide="${k + 1}"${k === sl.length - 1 ? " disabled" : ""}>次へ →</button></div>
+    ${s.notes ? `<div class="sl-notes"><b>話すこと:</b> ${inl(s.notes)} ${refsHTML(s.refs)}</div>` : refsHTML(s.refs)}
+  </div>`;
+}
+
+/* ---------- audio player ---------- */
+const Player = {
+  note: null, idx: 0, state: "idle", gen: 0, rate: 1,
+  engine() { return AI.tts ? "tts" : ("speechSynthesis" in window ? "web" : null); },
+  lines() { return this.note?.data?.lines || []; },
+  async play(from = this.idx) {
+    const eng = this.engine(); if (!eng || !this.note) return;
+    const gen = ++this.gen; this.idx = from; this.state = "playing"; this.paint();
+    const lines = this.lines(); const lang = S.settings.lang === "en" ? "en" : S.settings.lang === "ja" ? "ja" : undefined;
+    if (eng === "tts") {
+      const L = lines.slice(from).map((l, j) => ({ text: l.t, voice: (HOSTS[l.s] || HOSTS.A).voice, id: "L" + (from + j), ...(lang ? { language: lang } : {}) }));
+      try {
+        const first = L.slice(0, 6), rest = L.slice(6);
+        const ps = [AI.tts.speak(first, { rate: this.rate })];
+        for (let i = 0; i < rest.length; i += 8) { if (gen !== this.gen) return; ps.push(AI.tts.add(rest.slice(i, i + 8))); }
+        await Promise.all(ps);
+        if (gen === this.gen) { this.state = "idle"; this.idx = 0; this.paint(); }
+      } catch (e) {
+        if (gen !== this.gen) return;
+        this.state = "idle"; this.paint();
+        if (e?.code === "rate_limited") toast("読み上げの上限に達しました。少し待ってから再生してください。");
+        else if (e?.code === "not_granted" || e?.code === "unavailable") toast("この表示では読み上げを使えません。台本をお読みください。");
+      }
+    } else {
+      speechSynthesis.cancel();
+      const voices = speechSynthesis.getVoices(); const want = lang || "ja";
+      const vs = voices.filter(v => v.lang.toLowerCase().startsWith(want));
+      const step = i => {
+        if (gen !== this.gen) return;
+        if (i >= lines.length) { this.state = "idle"; this.idx = 0; this.paint(); return; }
+        this.idx = i; this.paint();
+        const u = new SpeechSynthesisUtterance(lines[i].t); u.lang = want === "ja" ? "ja-JP" : "en-US"; u.rate = this.rate;
+        const v = vs.length ? vs[lines[i].s === "B" ? Math.min(1, vs.length - 1) : 0] : null; if (v) u.voice = v;
+        u.pitch = lines[i].s === "B" ? 1.2 : 0.95;
+        u.onend = () => step(i + 1); u.onerror = () => { if (gen === this.gen) { this.state = "idle"; this.paint(); } };
+        speechSynthesis.speak(u);
+      };
+      step(from);
+    }
+  },
+  async pause() {
+    if (this.state !== "playing") return;
+    this.state = "paused"; this.paint();
+    if (this.engine() === "tts") await AI.tts.pause().catch(() => {}); else speechSynthesis.pause();
+  },
+  async resume() {
+    if (this.state !== "paused") return;
+    this.state = "playing"; this.paint();
+    if (this.engine() === "tts") await AI.tts.resume().catch(() => this.play(this.idx)); else speechSynthesis.resume();
+  },
+  stop() {
+    this.gen++; const was = this.state; this.state = "idle";
+    if (was !== "idle") { if (this.engine() === "tts") AI.tts.stop().catch(() => {}); else if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+    this.paint();
+  },
+  paint() {
+    if (!this.note || curNote !== this.note) return;
+    $$(".line").forEach(el => el.classList.toggle("cur", this.state !== "idle" && +el.dataset.line === this.idx));
+    const btn = $("#pPlay"); if (btn) { btn.innerHTML = this.state === "playing" ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>' : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>'; btn.setAttribute("aria-label", this.state === "playing" ? "一時停止" : "再生"); }
+    const now = $("#pNow"); if (now) { const l = this.lines()[this.idx]; now.textContent = this.state === "idle" ? `${this.lines().length}発言 · 約${Math.max(1, Math.round(this.lines().reduce((a, l) => a + l.t.length, 0) / 330))}分` : `${this.state === "paused" ? "一時停止中" : "再生中"} — ${(HOSTS[l?.s] || { name: "質問" }).name}`; }
+    const stop = $("#pStop"); if (stop) stop.hidden = this.state === "idle";
+    const cur = $(".line.cur"); if (cur && this.state === "playing") cur.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+};
+function renderPlayer(n) {
+  const d = n.data; Player.note = n;
+  const eng = Player.engine();
+  $("#vBody").innerHTML = `<div class="player">
+    <div class="p-bar">
+      ${eng ? `<button class="play" id="pPlay" type="button" aria-label="再生"></button><button class="btn sm" id="pStop" type="button" hidden>停止</button>
+      <select id="pRate" aria-label="速度">${[0.8, 1, 1.15, 1.3, 1.5].map(r => `<option value="${r}"${r === Player.rate ? " selected" : ""}>${r}×</option>`).join("")}</select>` : `<span class="hint">この表示では読み上げを使えません。台本をお読みください。</span>`}
+      <span class="now" id="pNow"></span>
+    </div>
+    <p class="hint" style="margin:0">${AUDIO_FORMATS[d.format]?.split(":")[0] || ""} · <b style="color:var(--host-a)">ハル</b>（聞き手）と <b style="color:var(--host-b)">ミナ</b>（解説）。発言をクリックするとそこから再生します。</p>
+    <form class="ask-row" id="askHosts"><input id="askQ" type="text" placeholder="番組に割り込んで質問する（例: それって具体的には？）" aria-label="ホストへの質問"><button class="btn sm primary" type="submit">質問する</button></form>
+    <div class="lines">${d.lines.map((l, i) => `<button type="button" class="line${l.ins ? " ins" : ""}" data-line="${i}"><span class="who ${l.s}">${l.s === "Q" ? "あなた" : (HOSTS[l.s] || HOSTS.A).name}</span><span>${esc(l.t)}</span></button>`).join("")}</div>
+  </div>`;
+  Player.paint();
+}
+async function askHosts(q) {
+  const n = curNote; if (!n || n.kind !== "audio" || !q.trim()) return;
+  if (!aiReady()) { toast(errMsg({ code: "no_ai" })); return; }
+  const at = Player.state === "idle" ? n.data.lines.length - 1 : Player.idx;
+  const wasPlaying = Player.state !== "idle"; Player.stop();
+  const btn = $("#askHosts button"); btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 考え中…';
+  const ctx = buildContext(q, 120000);
+  const before = n.data.lines.slice(Math.max(0, at - 8), at + 1).map(l => `${l.s === "Q" ? "リスナー" : (HOSTS[l.s] || HOSTS.A).name}: ${l.t}`).join("\n");
+  try {
+    const v = await ask(studioPrompt(`ポッドキャスト番組の途中で、リスナーから質問が届いた。ホストのハル（A、聞き手）とミナ（B、解説役）が番組内で自然に質問を受けて、ソースに基づいて答える4〜7発言を書く。最後の発言は、元の話題に戻る自然なつなぎにする。
+直前の会話:
+${before}
+
+リスナーの質問: ${q}
+
+話し言葉で、Markdownやパッセージは本文に入れない。1発言180字以内。`, ctx, `次のJSONだけを返す: {"lines":[{"s":"A","t":"発言"}]}`), { json: true });
+    const ins = arr(v?.lines).map(l => ({ s: l?.s === "B" ? "B" : "A", t: str(l?.t).trim(), ins: true })).filter(l => l.t);
+    if (!ins.length) throw { code: "invalid_json" };
+    n.data.lines.splice(at + 1, 0, { s: "Q", t: q, ins: true }, ...ins);
+    touch(n); renderPlayer(n);
+    if (wasPlaying || Player.engine()) { Player.play(at + 2); }
+  } catch (e) { toast(errMsg(e)); if (btn) { btn.disabled = false; btn.textContent = "質問する"; } }
+}
+
+/* ---------- export ---------- */
+function noteToMd(n) {
+  const d = n.data || {}; const L = [`# ${n.title}`, ""];
+  switch (n.kind) {
+    case "audio": d.lines.forEach(l => L.push(`**${l.s === "Q" ? "リスナー" : (HOSTS[l.s] || HOSTS.A).name}**: ${l.t}`, "")); break;
+    case "mindmap": { const w = (x, dep) => { L.push(`${"  ".repeat(dep)}- ${x.label}${x.note ? " — " + x.note : ""}${arr(x.refs).length ? " [" + x.refs.join("][") + "]" : ""}`); arr(x.children).forEach(c => w(c, dep + 1)); }; arr(d.children).forEach(c => w(c, 0)); break; }
+    case "timeline": arr(d.events).forEach(e => L.push(`- **${e.date}** ${e.title} — ${e.detail} ${arr(e.refs).map(r => `[${r}]`).join("")}`)); if (arr(d.cast).length) { L.push("", "## 登場人物・組織"); d.cast.forEach(c => L.push(`- **${c.name}**: ${c.role}`)); } break;
+    case "flashcards": arr(d.cards).forEach((c, i) => L.push(`${i + 1}. **${c.front}**`, `   ${c.back}`)); break;
+    case "quiz": arr(d.questions).forEach((q, i) => { L.push(`### Q${i + 1}. ${q.q}`); arr(q.choices).forEach((c, j) => L.push(`- ${"ABCD"[j]}. ${c}`)); L.push(`答え: ${"ABCD"[+q.answer]} — ${q.explain}`, ""); }); break;
+    case "slides": arr(d.slides).forEach((s, i) => { L.push(`## ${i + 1}. ${s.title}`); arr(s.bullets).forEach(b => L.push(`- ${b}`)); if (s.notes) L.push("", `> ${s.notes}`); L.push(""); }); break;
+    case "crossexam": L.push(d.verdict || "", "", "## 食い違う主張"); arr(d.conflicts).forEach(c => { L.push(`### ${c.topic}`); arr(c.positions).forEach(p => L.push(`- ${p.claim} ${arr(p.refs).map(r => `[${r}]`).join("")}`)); L.push(`評価: ${c.assessment}`, ""); }); L.push("## 一致している点"); arr(d.agreements).forEach(a => L.push(`- ${a.point}`)); L.push("", "## 答えられていない問い"); arr(d.gaps).forEach(g => L.push(`- ${g.question}（${g.why}）`)); L.push("", "## 信頼性"); arr(d.reliability).forEach(r => L.push(`- ${r.source} [${r.rating}] ${r.reason}`)); break;
+    case "table": { const c = arr(d.columns); L.push("| " + c.join(" | ") + " |", "|" + c.map(() => "---").join("|") + "|"); arr(d.rows).forEach(r => L.push("| " + c.map((_, i) => str(arr(r.cells)[i]).replace(/\|/g, "\\|")).join(" | ") + " |")); break; }
+    default: return n.md || "";
+  }
+  return L.join("\n");
+}
+function tableCsv(n) { const d = n.data || {}; const q = v => `"${str(v).replace(/"/g, '""')}"`; return [arr(d.columns).map(q).join(","), ...arr(d.rows).map(r => [...arr(d.columns).map((_, i) => q(arr(r.cells)[i])), q(arr(r.refs).join(" "))].join(","))].join("\n"); }
+async function saveFile(name, data) {
+  const safe = name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
+  if (AI.dl) { try { await AI.dl.save({ filename: safe, data }); return; } catch (e) { if (e?.code === "cancelled" || e?.code === "declined") return; } }
+  if (!window.claude) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: "text/plain;charset=utf-8" })); a.download = safe; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); return; }
+  copyText(data, "書き出せないため、内容をクリップボードにコピーしました。");
+}
+async function copyText(t, msg = "コピーしました") { try { await navigator.clipboard.writeText(t); toast(msg); } catch { toast("コピーできませんでした。テキストを選択してコピーしてください。"); } }
+function exportNotebook() {
+  const n = nb(); const L = [`# ${n.title}`, "", n.overview?.summary || "", "", "## ソース"];
+  nbSources().forEach(s => L.push(`- S${s.num}: ${s.title}${s.guide?.summary ? " — " + s.guide.summary : ""}`));
+  nbNotes().forEach(x => L.push("", "---", "", noteToMd(x)));
+  saveFile(`${n.title || "notebook"}.md`, L.join("\n"));
+}
+
+/* ---------- dialogs & tabs ---------- */
+function openDlg(sel) { const d = $(sel); if (!d.open) d.showModal(); }
+function closeDlg(sel) { const d = $(sel); if (d.open) d.close(); }
+function setTab(t) {
+  S.tab = t;
+  $("#paneSources").classList.toggle("on", t === "sources"); $("#paneChat").classList.toggle("on", t === "chat"); $("#paneStudio").classList.toggle("on", t === "studio");
+  $$("#mtabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+}
+function openSettings() {
+  $("#sDepth").value = S.settings.depth; $("#sLang").value = S.settings.lang;
+  $("#sStore").textContent = Store.mode === "db" ? "あなたのClaudeアカウントに保存（あなただけが見られます）" : "このブラウザ内に保存";
+  $("#sAi").textContent = AI.sample ? "このページから直接Claudeを呼び出しています。利用量はあなたのClaudeプランから使われます。" : apiKey() ? "APIキーでAnthropic APIに接続しています。" : !AI.checked ? "確認中…" : "未接続です。claude.ai上で開くか、APIキーを入力してください。";
+  const showKey = AI.checked && !AI.sample;
+  $("#sKeyL").hidden = !showKey; $("#sKeyBox").hidden = !showKey; $("#sKey").value = apiKey();
+  $("#sDelNb").textContent = "このノートブックを削除"; $("#sDelNb").classList.remove("confirm");
+  openDlg("#setDlg");
+}
+function switchNb(id) {
+  if (S.chatCtl) S.chatCtl.abort();
+  S.cur = id; lsSet("marginalia.cur", id); renderAll();
+}
+function newNotebook() {
+  const n = { id: mkId("nb"), type: "nb", title: "無題のノートブック", createdAt: Date.now(), updatedAt: Date.now(), chat: [] };
+  S.notebooks.push(n); touch(n); switchNb(n.id); openDlg("#addDlg");
+}
+async function deleteNotebook() {
+  const n = nb(); if (!n) return;
+  const srcs = S.sources.filter(s => s.nbId === n.id), notes = S.notes.filter(x => x.nbId === n.id);
+  S.sources = S.sources.filter(s => s.nbId !== n.id); S.notes = S.notes.filter(x => x.nbId !== n.id); S.notebooks = S.notebooks.filter(x => x !== n);
+  if (!n._sample) { for (const r of [...srcs, ...notes, n]) await Store.del(r); }
+  if (n.id === "nb-sample") lsSet("marginalia.noSample", true);
+  if (!S.notebooks.length) { const m = { id: mkId("nb"), type: "nb", title: "無題のノートブック", createdAt: Date.now(), updatedAt: Date.now(), chat: [] }; S.notebooks.push(m); touch(m); }
+  closeDlg("#setDlg"); switchNb(S.notebooks.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0].id); toast("ノートブックを削除しました");
+}
+function renderAll() { renderTop(); renderSources(); renderModes(); renderChat(); renderNotes(); }
+
+/* ---------- dictation ---------- */
+function setupDictation() {
+  const d = AI.dict; const mic = $("#mic"); if (!d) return;
+  mic.hidden = false;
+  d.onPartial(({ text }) => { const p = $("#partial"); p.hidden = !text; p.textContent = text; });
+  d.onFinal(({ text }) => { const q = $("#q"); q.value = (q.value ? q.value.trimEnd() + " " : "") + text; $("#partial").hidden = true; autoGrow(); });
+  d.onState(({ state }) => { mic.classList.toggle("live", state === "listening" || state === "starting"); mic.setAttribute("aria-label", state === "idle" ? "音声入力" : "音声入力を止める"); if (state === "idle") $("#partial").hidden = true; });
+  mic.addEventListener("click", () => {
+    if (d.active()) { d.stop().catch(() => {}); return; }
+    d.start(S.settings.lang === "en" ? { language: "en-US" } : S.settings.lang === "ja" ? { language: "ja-JP" } : undefined).catch(e => { if (e?.code === "not_granted") mic.hidden = true; });
+  });
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("button,[data-mm],[data-q],[data-fc]"); if (!t) return;
+  const ds = t.dataset;
+  if (t.matches("[data-close]")) { t.closest("dialog").close(); return; }
+  if (ds.ref) { const f = findRef(ds.ref); if (f) openSource(f.s.id, f.idx); else toast(`${ds.ref} は見つかりませんでした`); return; }
+  if (ds.q) { setTab("chat"); sendChat(ds.q); return; }
+  if (ds.askChat) { closeDlg("#viewDlg"); setTab("chat"); sendChat(ds.askChat); return; }
+  if (ds.mode) { S.settings.mode = ds.mode; saveSettings(); renderModes(); return; }
+  if (ds.tab) { setTab(ds.tab); return; }
+  if (ds.atab) { $$("[data-atab]").forEach(b => b.setAttribute("aria-selected", b === t)); $$("[data-apanel]").forEach(p => p.hidden = p.dataset.apanel !== ds.atab); return; }
+  if (ds.openSrc) { openSource(ds.openSrc, -1); return; }
+  if (ds.delSrc) {
+    if (t.dataset.armed) { const s = S.sources.find(x => x.id === ds.delSrc); S.sources = S.sources.filter(x => x !== s); if (s && !nb()._sample) Store.del(s); else if (s) ensurePersisted(S.cur); renderSources(); renderChat(true); return; }
+    t.dataset.armed = "1"; t.textContent = "削除?"; t.classList.add("confirm"); t.style.opacity = 1; setTimeout(() => { if (t.isConnected) { delete t.dataset.armed; t.textContent = "✕"; t.classList.remove("confirm"); t.style.opacity = ""; } }, 3000); return;
+  }
+  if (ds.tool) { runTool(ds.tool); return; }
+  if (ds.stopRun) { S.running.find(r => r.id === ds.stopRun)?.ctl.abort(); return; }
+  if (ds.openNote) { openNote(ds.openNote); return; }
+  if (ds.mmt) { e.stopPropagation(); const n = curNote; n._open.has(ds.mmt) ? n._open.delete(ds.mmt) : n._open.add(ds.mmt); renderMindmap(n); return; }
+  if (ds.mm !== undefined && t.matches(".mm-pill")) { showMMDetail(curNote, ds.mm); return; }
+  if (ds.qz) { const [k, i] = ds.qz.split(":").map(Number); curNote._ans[k] = i; const y = $("#viewDlg .d-body").scrollTop; renderQuiz(curNote); $("#viewDlg .d-body").scrollTop = y; return; }
+  if (ds.slide !== undefined) { renderSlides(curNote, +ds.slide); return; }
+  if (ds.line !== undefined) { Player.play(+ds.line); return; }
+  switch (ds.act || t.id) {
+    case "add-src": case "addSrc": openDlg("#addDlg"); break;
+    case "overview": makeOverview(); break;
+    case "stop-chat": S.chatCtl?.abort(); break;
+    case "save-msg": { const n = nb(); const m = n.chat[+ds.k]; const q = n.chat[+ds.k - 1]?.content || "回答"; saveNote({ kind: "chat", title: q.slice(0, 60), md: splitFollow(m.content).body }); toast("メモに保存しました"); break; }
+    case "copy-msg": copyText(splitFollow(nb().chat[+ds.k].content).body); break;
+    case "speak-msg": { const body = splitFollow(nb().chat[+ds.k].content).body.replace(/\[S\d+\.\d+\]/g, "").replace(/[#*_>`|]/g, "").slice(0, 2000); Player.stop(); AI.tts?.speak(body, S.settings.lang === "ja" ? { language: "ja" } : {}).catch(err => { if (err?.code !== "stopped") toast("読み上げできませんでした"); }); break; }
+    case "newNb": newNotebook(); break;
+    case "openSettings": openSettings(); break;
+    case "clearChat": { const n = nb(); n.chat = []; touch(n); renderChat(); break; }
+    case "genAudio": genAudio(); break;
+    case "newMemo": { const n = saveNote({ kind: "memo", title: "新しいメモ", md: "" }, true); setTimeout(() => $("#memoEdit")?.focus(), 50); break; }
+    case "pAdd": addPaste(); break;
+    case "tAdd": addTopic(); break;
+    case "pPlay": Player.state === "playing" ? Player.pause() : Player.state === "paused" ? Player.resume() : Player.play(Player.idx); break;
+    case "pStop": Player.stop(); Player.idx = 0; Player.paint(); break;
+    case "vCopy": copyText(noteToMd(curNote)); break;
+    case "vDown": saveFile(`${curNote.title}.md`, noteToMd(curNote)); break;
+    case "csv": saveFile(`${curNote.title}.csv`, "﻿" + tableCsv(curNote)); break;
+    case "vToSrc": { const n = curNote; const s = newSource(n.title, "note"); closeDlg("#viewDlg"); setTab("sources"); finishSource(s, noteToMd(n)); break; }
+    case "vDel": {
+      if (!t.classList.contains("confirm")) { t.classList.add("confirm"); t.textContent = "本当に削除"; return; }
+      const n = curNote; Player.stop(); S.notes = S.notes.filter(x => x !== n); if (!nb()._sample) Store.del(n); else ensurePersisted(S.cur); closeDlg("#viewDlg"); renderNotes(); break;
+    }
+    case "sExport": exportNotebook(); break;
+    case "sDelNb": if (!t.classList.contains("confirm")) { t.classList.add("confirm"); t.textContent = "もう一度押すと削除します"; } else deleteNotebook(); break;
+    case "mm-all": { const n = curNote; const w = (x, p) => { if (arr(x.children).length) { n._open.add(p); x.children.forEach((c, i) => w(c, p + "." + i)); } }; w({ children: n.data.children }, "r"); renderMindmap(n); break; }
+    case "mm-none": curNote._open = new Set(["r", "x"]); renderMindmap(curNote); break;
+    case "fc-flip": $("#fc")?.classList.toggle("flip"); break;
+    case "fc": $("#fc")?.classList.toggle("flip"); break;
+    case "fc-known": { const n = curNote; const i = n._deck.shift(); n.data.known.push(i); touch(n); renderCards(n); break; }
+    case "fc-again": { const n = curNote; n._deck.push(n._deck.shift()); renderCards(n); break; }
+    case "fc-reset": { const n = curNote; n.data.known = []; n._deck = null; touch(n); renderCards(n); break; }
+    case "qz-reset": curNote._ans = {}; renderQuiz(curNote); break;
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input,textarea,select")) return;
+  if (!$("#viewDlg").open || !curNote) return;
+  if (curNote.kind === "flashcards" && e.key === " ") { e.preventDefault(); $("#fc")?.classList.toggle("flip"); }
+  if (curNote.kind === "slides" && (e.key === "ArrowRight" || e.key === "ArrowLeft")) renderSlides(curNote, (curNote._k || 0) + (e.key === "ArrowRight" ? 1 : -1));
+  if (curNote.kind === "mindmap" && (e.key === "Enter") && e.target.matches(".mm-pill")) showMMDetail(curNote, e.target.dataset.mm);
+});
+$("#composer").addEventListener("submit", e => { e.preventDefault(); if (S.chatCtl) { S.chatCtl.abort(); return; } sendChat($("#q").value); });
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!S.chatCtl) sendChat($("#q").value); } });
+$("#q").addEventListener("input", autoGrow);
+$("#nbSelect").addEventListener("change", e => switchNb(e.target.value));
+$("#nbTitle").addEventListener("change", e => { const n = nb(); n.title = e.target.value.trim() || "無題のノートブック"; touch(n); renderTop(); renderChat(true); });
+$("#vTitle").addEventListener("change", e => { if (!curNote) return; curNote.title = e.target.value.trim() || "無題"; touch(curNote); renderNotes(); });
+$("#viewDlg").addEventListener("close", () => { Player.stop(); });
+$("#sDepth").addEventListener("change", e => { S.settings.depth = e.target.value; saveSettings(); });
+$("#sLang").addEventListener("change", e => { S.settings.lang = e.target.value; saveSettings(); });
+$("#sKey").addEventListener("change", e => { lsSet("marginalia.key", e.target.value.trim()); renderStatus(); renderChat(true); });
+$("#fileIn").addEventListener("change", e => { const f = [...e.target.files]; e.target.value = ""; if (f.length) addFiles(f); });
+document.addEventListener("submit", e => { if (e.target.id === "askHosts") { e.preventDefault(); const q = $("#askQ").value; $("#askQ").value = ""; askHosts(q); } });
+document.addEventListener("change", e => { if (e.target.id === "pRate") { Player.rate = +e.target.value; if (AI.tts && Player.state !== "idle") AI.tts.setRate(Player.rate).catch(() => {}); } if (e.target.id === "selAll") { nbSources().forEach(s => { s.enabled = e.target.checked; touch(s); }); renderSources(); } if (e.target.dataset.toggle) { const s = S.sources.find(x => x.id === e.target.dataset.toggle); s.enabled = e.target.checked; touch(s); renderSources(); } });
+const drop = $("#drop");
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => { const f = [...(e.dataTransfer?.files || [])]; if (f.length) addFiles(f); });
+document.addEventListener("dragover", e => { if (e.dataTransfer?.types?.includes("Files")) e.preventDefault(); });
+document.addEventListener("drop", e => { if (e.target.closest("#drop")) return; const f = [...(e.dataTransfer?.files || [])]; if (f.length) { e.preventDefault(); addFiles(f); } });
+document.addEventListener("paste", e => {
+  if (e.target.closest("input,textarea")) return;
+  const imgs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith("image/"));
+  if (imgs.length) { e.preventDefault(); addFiles(imgs); }
+});
+function attachTts() {
+  if (!AI.tts) return;
+  AI.tts.onLine(({ id }) => { if (!id || !/^L\d+$/.test(id)) return; Player.idx = +id.slice(1); Player.paint(); });
+}
+
+/* ---------- boot ---------- */
+async function boot() {
+  loadSample();
+  S.cur = "nb-sample";
+  renderTools(); renderAll();
+  const capsP = initCaps().then(attachTts);
+  await Store.init();
+  try {
+    const recs = await Store.loadAll();
+    const mine = { nb: recs.filter(r => r.type === "nb"), src: recs.filter(r => r.type === "src"), note: recs.filter(r => r.type === "note") };
+    if (mine.nb.length) {
+      const ids = new Set(mine.nb.map(n => n.id));
+      if (ids.has("nb-sample")) { S.notebooks = S.notebooks.filter(n => n.id !== "nb-sample"); S.sources = S.sources.filter(s => s.nbId !== "nb-sample"); S.notes = S.notes.filter(n => n.nbId !== "nb-sample"); }
+      S.notebooks.push(...mine.nb); S.sources.push(...mine.src.filter(s => ids.has(s.nbId))); S.notes.push(...mine.note.filter(s => ids.has(s.nbId)));
+      const last = lsGet("marginalia.cur", null);
+      S.cur = S.notebooks.some(n => n.id === last) ? last : mine.nb.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0].id;
+    }
+    if (lsGet("marginalia.noSample", false) && S.notebooks.length > 1) { S.notebooks = S.notebooks.filter(n => !n._sample); S.sources = S.sources.filter(s => s.nbId !== "nb-sample" || S.notebooks.some(n => n.id === "nb-sample")); S.notes = S.notes.filter(x => x.nbId !== "nb-sample" || S.notebooks.some(n => n.id === "nb-sample")); if (!S.notebooks.some(n => n.id === S.cur)) S.cur = S.notebooks[0].id; }
+    renderAll();
+  } catch (e) { console.warn("load failed", e); toast("保存したノートブックを読み込めませんでした。"); }
+  await capsP;
+  renderChat(true);
+}
+boot();
+</script>
