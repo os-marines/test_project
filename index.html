@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c1830">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>つみきタワー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+/* Layout: one full-screen canvas. HUD pinned top, cards rise from the bottom.
+   One deliberate look: the sky turns from day to night to space as the tower grows, so no separate dark theme. */
+:root{
+  --ink:#1c1830;
+  --paper:#fffaf1;
+  --paper-dim:#f2e9db;
+  --muted:#6d6580;
+  --coral:#ff6a3d;
+  --sun:#ffc23d;
+  --on-accent:#ffffff;
+  --font-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --font-body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  box-sizing:border-box;
+  height:100%;
+  background:var(--ink);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{
+  height:100%;margin:0;overflow:hidden;
+  background:var(--ink);color:var(--ink);
+  font-family:var(--font-body);
+  touch-action:manipulation;overscroll-behavior:none;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+#app{position:relative;width:100%;height:100%;overflow:hidden;cursor:pointer}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+.hud{position:absolute;top:18px;left:0;right:0;display:flex;flex-direction:column;align-items:center;pointer-events:none;color:var(--paper);text-shadow:0 3px 0 rgba(28,24,48,.25)}
+.score{font-family:var(--font-display);font-size:clamp(52px,15vw,88px);line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-size:.32em;margin-left:.15em}
+.sub{margin-top:6px;font-weight:800;font-size:13px;letter-spacing:.08em;opacity:.9}
+
+.mute{position:absolute;top:12px;right:max(12px,env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;background:rgba(255,250,241,.24);color:var(--paper);cursor:pointer}
+.mute:focus-visible,.btn:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.mute svg{width:22px;height:22px}
+
+.screen{position:absolute;inset:0;pointer-events:none}
+.logo{position:absolute;top:13%;left:0;right:0;margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--font-display);font-weight:400;font-size:clamp(46px,14vw,72px);line-height:1}
+.logo span{display:block;padding:.12em .32em .16em;border-radius:12px;color:var(--on-accent);box-shadow:inset 0 -.12em 0 rgba(0,0,0,.18),0 6px 0 rgba(28,24,48,.22)}
+.logo span:first-child{background:var(--coral);transform:translateX(-.35em) rotate(-2deg)}
+.logo span:last-child{background:var(--sun);color:var(--ink);transform:translateX(.3em) rotate(1.5deg)}
+
+.card{position:absolute;left:50%;bottom:22px;width:min(360px,calc(100% - 32px));transform:translateX(-50%);
+  background:var(--paper);border-radius:22px;padding:20px 22px 22px;text-align:center;
+  box-shadow:0 8px 0 rgba(28,24,48,.2),0 24px 40px rgba(28,24,48,.28);
+  animation:rise .45s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes rise{from{transform:translate(-50%,30px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.cta{margin:0;font-family:var(--font-display);font-size:24px;color:var(--coral);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.best{margin:8px 0 0;font-weight:800;color:var(--muted);font-size:14px;letter-spacing:.04em}
+.best b{color:var(--ink);font-size:18px;font-variant-numeric:tabular-nums}
+.rules{list-style:none;margin:14px 0 0;padding:12px 0 0;border-top:2px dashed var(--paper-dim);display:grid;gap:6px;font-size:13px;font-weight:500;color:var(--muted);text-align:left}
+.rules li{display:flex;gap:8px;align-items:baseline}
+.rules li::before{content:"";flex:none;width:10px;height:7px;border-radius:2px;background:var(--coral);transform:translateY(-1px)}
+.rules li:nth-child(2)::before{background:var(--sun)}
+.rules li:nth-child(3)::before{background:#5bc0a8}
+
+.label{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--muted)}
+.big{margin:2px 0 0;font-family:var(--font-display);font-size:72px;line-height:1.05;font-variant-numeric:tabular-nums}
+.big small{font-size:24px;margin-left:4px}
+.rank{margin:6px 0 0;font-weight:800;font-size:17px}
+.chip{display:inline-block;margin:10px 0 0;padding:4px 12px;border-radius:999px;background:var(--sun);font-weight:800;font-size:13px}
+.btn{pointer-events:auto;display:block;width:100%;margin-top:16px;padding:14px;border:0;border-radius:14px;background:var(--coral);color:var(--on-accent);
+  font-family:var(--font-display);font-size:20px;cursor:pointer;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.btn:active{transform:translateY(2px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+
+@media (prefers-reduced-motion: reduce){.card,.cta{animation:none}}
+</style>
+
+<div id="app">
+  <canvas id="c" aria-label="つみきタワーのゲーム画面"></canvas>
+
+  <div class="hud" id="hud" hidden>
+    <div class="score" aria-live="polite"><span id="score">0</span><small>段</small></div>
+    <div class="sub" id="sub">ベスト 0段</div>
+  </div>
+
+  <button class="mute" id="mute" type="button" aria-label="音を消す">
+    <svg id="icoOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+    <svg id="icoOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+  </button>
+
+  <div class="screen" id="title">
+    <h1 class="logo"><span>つみき</span><span>タワー</span></h1>
+    <div class="card">
+      <p class="cta">タップでスタート</p>
+      <p class="best">ベスト <b id="tBest">0</b> 段</p>
+      <ul class="rules">
+        <li>左右に動くつみきを、タップで落とす</li>
+        <li>はみ出た分は切り落とされて細くなる</li>
+        <li>ピッタリ3連続で幅がすこし戻る</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="screen" id="over" hidden>
+    <div class="card">
+      <p class="label">きろく</p>
+      <p class="big"><span id="oScore">0</span><small>段</small></p>
+      <p class="rank" id="oRank"></p>
+      <p class="chip" id="oNew" hidden>自己ベスト更新！</p>
+      <p class="best">ベスト <b id="oBest">0</b> 段</p>
+      <button class="btn" id="again" type="button">もう一回</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const cvs = $('c'), ctx = cvs.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // World units: the playfield is 100 wide; blocks are BH tall.
+  const BASE_W = 60, BH = 8, PERFECT = 1.5, GRAV = 260;
+  const FONT_D = '"Dela Gothic One","Hiragino Sans",sans-serif';
+
+  let W = 0, H = 0, s = 1;
+  function resize() {
+    const r = cvs.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    W = r.width; H = r.height;
+    cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    s = Math.min(W / 100, H / 120);
+  }
+  addEventListener('resize', resize); resize();
+
+  // ---------- storage (per-device conveniences only) ----------
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  let best = store.get('tsumiki.best', 0);
+  let muted = store.get('tsumiki.muted', false);
+
+  // ---------- sound ----------
+  let ac = null;
+  function audio() {
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (ac && ac.state === 'suspended') ac.resume();
+  }
+  function tone(f, d = .12, type = 'triangle', vol = .16, slide = 0, delay = 0) {
+    if (muted || !ac) return;
+    const t = ac.currentTime + delay, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, f * slide), t + d);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + .01);
+    g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g).connect(ac.destination); o.start(t); o.stop(t + d + .03);
+  }
+  const SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  function buzz(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+  function setMute(m) {
+    muted = m; store.set('tsumiki.muted', m);
+    $('icoOn').hidden = m; $('icoOff').hidden = !m;
+    $('mute').setAttribute('aria-label', m ? '音を出す' : '音を消す');
+  }
+  setMute(muted);
+  $('mute').addEventListener('click', e => { e.stopPropagation(); audio(); setMute(!muted); });
+  $('mute').addEventListener('pointerdown', e => e.stopPropagation());
+
+  // ---------- game state ----------
+  let state = 'title', stack, cur, debris = [], rings = [], floats = [];
+  let score = 0, combo = 0, camY = 0, zoom = 1, shake = 0, overAt = 0, skyLv = 0;
+
+  const hueFor = i => (14 + i * 13) % 360;
+  const topY = () => stack.length * BH;
+  const speedFor = n => Math.min(40 + n * 1.8, 118);
+
+  function reset() {
+    stack = [{ x: 50, w: BASE_W, i: 0 }];
+    debris = []; rings = []; floats = [];
+    score = 0; combo = 0;
+    spawn(); updateHud();
+  }
+  function spawn() {
+    const top = stack[stack.length - 1], i = stack.length, d = i % 2 ? 1 : -1;
+    cur = { x: 50 - d * 58, w: top.w, i, dir: d };
+  }
+  function mkDebris(x, w, i, dirx) {
+    return { x, y: i * BH, w, i, vx: dirx * (14 + Math.random() * 10), vy: 18, rot: 0, vr: dirx * (1.5 + Math.random() * 2.5) };
+  }
+
+  function drop() {
+    const top = stack[stack.length - 1], dx = cur.x - top.x, ad = Math.abs(dx);
+    if (ad >= cur.w) {
+      debris.push(mkDebris(cur.x, cur.w, cur.i, Math.sign(dx) || 1));
+      cur = null; gameOver(); return;
+    }
+    const piece = { x: cur.x, w: cur.w, i: cur.i };
+    if (ad <= PERFECT) {
+      piece.x = top.x; combo++;
+      if (combo >= 3 && piece.w < BASE_W) piece.w = Math.min(BASE_W, piece.w + 4);
+      rings.push({ x: piece.x, w: piece.w, i: piece.i, t: 0 });
+      floats.push({ text: combo > 1 ? `ピッタリ ×${combo}` : 'ピッタリ', y: (piece.i + 1) * BH, t: 0 });
+      tone(523.25 * Math.pow(2, SCALE[Math.min(combo - 1, SCALE.length - 1)] / 12), .22, 'triangle', .18);
+      buzz(15);
+    } else {
+      combo = 0;
+      const nw = cur.w - ad, nx = top.x + dx / 2;
+      const cx = dx > 0 ? nx + nw / 2 + ad / 2 : nx - nw / 2 - ad / 2;
+      piece.x = nx; piece.w = nw;
+      debris.push(mkDebris(cx, ad, cur.i, Math.sign(dx)));
+      tone(180 + Math.min(score, 40) * 4, .09, 'square', .06);
+      buzz(8);
+      if (!reduce) shake = Math.min(7, 2 + ad * .15);
+    }
+    stack.push(piece); score++;
+    updateHud(); spawn();
+  }
+
+  function rank(n) {
+    if (n < 5) return 'まだ地面が近い';
+    if (n < 12) return 'いい調子の積み手';
+    if (n < 20) return '雲に手が届いた';
+    if (n < 32) return '夕焼けの高さ';
+    if (n < 48) return '一番星が見えた';
+    if (n < 75) return '夜空の住人';
+    return '宇宙までつながった';
+  }
+
+  function updateHud() {
+    $('score').textContent = score;
+    $('sub').textContent = combo >= 2 ? `ピッタリ ${combo}連続` : `ベスト ${best}段`;
+  }
+
+  function start() {
+    audio(); reset(); state = 'play';
+    $('title').hidden = true; $('over').hidden = true; $('hud').hidden = false;
+  }
+
+  function gameOver() {
+    state = 'over'; overAt = performance.now();
+    const isNew = score > best;
+    if (isNew) { best = score; store.set('tsumiki.best', best); }
+    tone(330, .5, 'sawtooth', .07, .35); buzz([30, 40, 60]);
+    setTimeout(() => {
+      if (state !== 'over') return;
+      $('oScore').textContent = score;
+      $('oRank').textContent = rank(score);
+      $('oBest').textContent = best;
+      $('oNew').hidden = !(isNew && score > 0);
+      $('hud').hidden = true;
+      $('over').hidden = false;
+      if (isNew && score > 0) [0, 4, 7, 12].forEach((n, j) => tone(523.25 * Math.pow(2, n / 12), .18, 'triangle', .14, 0, j * .09));
+    }, 900);
+  }
+
+  function tap() {
+    if (state === 'title') start();
+    else if (state === 'play') drop();
+    else if (state === 'over' && performance.now() - overAt > 1300) start();
+  }
+  $('app').addEventListener('pointerdown', e => {
+    if (e.target.closest('button')) return;
+    e.preventDefault(); audio(); tap();
+  });
+  $('again').addEventListener('click', e => { e.stopPropagation(); start(); });
+  addEventListener('keydown', e => {
+    if (e.code === 'Space' || e.code === 'Enter') {
+      if (document.activeElement && document.activeElement.tagName === 'BUTTON') return;
+      e.preventDefault(); audio(); tap();
+    }
+  });
+
+  // ---------- scenery ----------
+  const SKY = [
+    [0,  '#5fbdf2', '#e6f6ff'],
+    [14, '#7fa6e6', '#ffe0b0'],
+    [26, '#5866c0', '#ffad7a'],
+    [38, '#2c2d70', '#cf6c8e'],
+    [52, '#0d1236', '#2b3170'],
+    [80, '#03030c', '#12122e']
+  ];
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const mix = (a, b, t) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
+  function skyAt(lv) {
+    for (let i = 0; i < SKY.length - 1; i++) {
+      const [l0, t0, b0] = SKY[i], [l1, t1, b1] = SKY[i + 1];
+      if (lv <= l1) { const t = Math.max(0, (lv - l0) / (l1 - l0)); return [mix(t0, t1, t), mix(b0, b1, t)]; }
+    }
+    const last = SKY[SKY.length - 1]; return [last[1], last[2]];
+  }
+  const stars = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: .6 + Math.random() * 1.4, p: Math.random() * 6.28 }));
+  const clouds = Array.from({ length: 12 }, (_, n) => ({ x: Math.random() * 140 - 20, wy: 30 + n * 42 + Math.random() * 20, sc: .7 + Math.random() * .7, v: 2 + Math.random() * 3 }));
+  const clamp01 = v => Math.max(0, Math.min(1, v));
+
+  function rr(x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+  }
+  // Draws a block centred on the current origin, in pixels.
+  function blockShape(wp, hp, hue, stone) {
+    const r = Math.min(6, hp * .2);
+    const x = -wp / 2, y = -hp / 2;
+    ctx.fillStyle = stone ? '#8a7f74' : `hsl(${hue} 50% 40%)`;
+    rr(x, y, wp, hp, r); ctx.fill();
+    ctx.fillStyle = stone ? '#c9bfb2' : `hsl(${hue} 74% 62%)`;
+    rr(x, y, wp, hp * .84, r); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.38)';
+    if (wp > r * 2 + 2) ctx.fillRect(x + r * .8, y + hp * .12, wp - r * 1.6, Math.max(1.5, hp * .1));
+  }
+
+  // ---------- loop ----------
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    update(dt); draw(dt);
+    requestAnimationFrame(frame);
+  }
+
+  function update(dt) {
+    if (cur && state !== 'over') {
+      cur.x += cur.dir * speedFor(state === 'play' ? score : 3) * dt;
+      if (cur.x > 108) { cur.x = 108; cur.dir = -1; } else if (cur.x < -8) { cur.x = -8; cur.dir = 1; }
+    }
+    for (const d of debris) { d.vy -= GRAV * dt; d.x += d.vx * dt; d.y += d.vy * dt; d.rot += d.vr * dt; }
+    const k = s * zoom;
+    debris = debris.filter(d => d.y > camY - (H * .55) / k - BH * 3);
+    rings.forEach(f => f.t += dt); rings = rings.filter(f => f.t < .6);
+    floats.forEach(f => f.t += dt); floats = floats.filter(f => f.t < 1);
+    for (const c of clouds) { c.x += c.v * dt; if (c.x > 130) c.x = -30; }
+
+    const ty = topY();
+    let zt = 1, ct = Math.max(ty, .4 * H / s);
+    if (state === 'over') {
+      zt = Math.min(1, (.5 * H) / (ty * s));
+      ct = ty / 2 - .06 * H / (s * zt);
+    }
+    zoom += (zt - zoom) * Math.min(1, dt * 2.5);
+    camY += (ct - camY) * Math.min(1, dt * (state === 'over' ? 2.5 : 6));
+    if (state !== 'over') skyLv += (score - skyLv) * Math.min(1, dt * 1.5);
+    shake = Math.max(0, shake - dt * 30);
+  }
+
+  function draw(dt) {
+    const k = s * zoom, refY = H * .45;
+    const sx = x => W / 2 + (x - 50) * k;
+    const sy = y => refY - (y - camY) * k;
+    const night = clamp01((skyLv - 30) / 22);
+    const dusk = clamp01((skyLv - 16) / 20);
+
+    // sky
+    const [top, bot] = skyAt(skyLv);
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, top); g.addColorStop(1, bot);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    if (night > 0) {
+      const t = performance.now() / 1000;
+      for (const st of stars) {
+        const y = ((st.y * H + camY * k * .04) % H + H) % H;
+        ctx.globalAlpha = night * (.55 + .45 * Math.sin(t * 2 + st.p));
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(st.x * W, y, st.r, 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // clouds (parallax)
+    const cloudA = 1 - dusk * .75;
+    for (const c of clouds) {
+      const cy = refY - (c.wy - camY) * k * .55;
+      if (cy < -60 || cy > H + 60) continue;
+      const cx = W / 2 + (c.x - 50) * k * .9, r = 9 * k * c.sc / 2;
+      ctx.globalAlpha = .8 * cloudA;
+      ctx.fillStyle = dusk > .5 ? mix('#ffd9c7', '#8c87b8', clamp01((skyLv - 30) / 15)) : '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, 6.283);
+      ctx.arc(cx + r * 1.1, cy + r * .25, r * .8, 0, 6.283);
+      ctx.arc(cx - r * 1.1, cy + r * .3, r * .7, 0, 6.283);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.save();
+    if (shake > 0) ctx.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
+
+    // ground
+    const gy = sy(0);
+    if (gy < H) {
+      ctx.fillStyle = mix('#7cc46f', '#1d3140', clamp01((skyLv - 20) / 30));
+      ctx.fillRect(-20, gy, W + 40, H - gy + 20);
+      ctx.fillStyle = 'rgba(0,0,0,.12)';
+      ctx.fillRect(-20, gy, W + 40, Math.max(3, 1.2 * k));
+    }
+
+    // tower
+    const hp = BH * k;
+    for (const b of stack) {
+      const cy = sy(b.i * BH + BH / 2);
+      if (cy < -hp || cy > H + hp) continue;
+      ctx.save(); ctx.translate(sx(b.x), cy);
+      blockShape(b.w * k, hp, hueFor(b.i), b.i === 0);
+      ctx.restore();
+    }
+    if (cur && state !== 'over') {
+      ctx.save(); ctx.translate(sx(cur.x), sy(cur.i * BH + BH / 2));
+      blockShape(cur.w * k, hp, hueFor(cur.i), false);
+      ctx.restore();
+    }
+    for (const d of debris) {
+      ctx.save(); ctx.translate(sx(d.x), sy(d.y + BH / 2)); ctx.rotate(d.rot);
+      blockShape(d.w * k, hp, hueFor(d.i), false);
+      ctx.restore();
+    }
+
+    // perfect rings
+    for (const f of rings) {
+      const p = f.t / .6, grow = (2 + p * 10) * k;
+      ctx.globalAlpha = 1 - p;
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+      rr(sx(f.x - f.w / 2) - grow, sy(f.i * BH + BH) - grow * .6, f.w * k + grow * 2, hp + grow * 1.2, 8);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // floating labels
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const f of floats) {
+      const p = f.t;
+      ctx.globalAlpha = 1 - p * p;
+      ctx.font = `${Math.round(Math.max(18, 5.2 * s))}px ${FONT_D}`;
+      const y = sy(f.y) - 18 - p * 34;
+      ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(28,24,48,.55)'; ctx.lineJoin = 'round';
+      ctx.strokeText(f.text, W / 2, y);
+      ctx.fillStyle = '#fff'; ctx.fillText(f.text, W / 2, y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  // ---------- boot ----------
+  $('tBest').textContent = best;
+  reset();
+  camY = Math.max(topY(), .4 * H / s);
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</html>
